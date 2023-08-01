@@ -1,4 +1,12 @@
-﻿@import url('scrollbar.css');
+﻿/*
+    PolygonMC - LFInteractive LLC. 2021-2024
+    PolygonMC is a free and open source Minecraft Launcher implementing various modloaders, mod platforms, and minecraft authentication.
+    PolygonMC is protected under GNU GENERAL PUBLIC LICENSE version 3.0 License
+    https://www.gnu.org/licenses/gpl-3.0.en.html#license-text
+    https://github.com/DcmanProductions/PolygonMC
+*/
+
+@import url('scrollbar.css');
 @import url('/libraries/fontawesome/css/all.min.css');
 
 :root {
@@ -255,7 +263,6 @@ input:focus {
     font-weight: 400;
 }
 
-
     .dropdown:hover, .dropdown:focus {
         cursor: pointer;
         background-color: hsl(0,0%,15%);
@@ -351,4 +358,3 @@ input:focus {
 .popup h2 {
     font-size: 2rem;
 }
-
