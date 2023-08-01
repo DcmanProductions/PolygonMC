@@ -1,0 +1,32 @@
+﻿<style>
+    .loading-container {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 2;
+        background: var(--background);
+    }
+
+        .loading-container .loading {
+            position: relative;
+            display: block;
+            left: 0;
+            top: 0;
+        }
+</style>
+<div class="loading-container">
+    <h1>@Title</h1>
+    <p>@Message</p>
+    <div class="loading"></div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public string Message { get; set; }
+
+}
