@@ -1,0 +1,9 @@
+[submodule "wwwroot/libraries/fontawesome"]
+	path = wwwroot/libraries/fontawesome
+	url = https://github.com/fortAwesome/Font-Awesome.git
+[submodule "PolygonMC/wwwroot/libraries/fontawesome"]
+	path = PolygonMC/wwwroot/libraries/fontawesome
+	url = https://github.com/fortAwesome/Font-Awesome.git
+[submodule "Minecraft.NET"]
+	path = Minecraft.NET
+	url = https://github.com/dcmanproductions/Minecraft.NET
