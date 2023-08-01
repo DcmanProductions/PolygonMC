@@ -1,0 +1,106 @@
+﻿@page "/discover/product/{Source}/{Id}"
+@inject NavigationManager navigation;
+@using PolygonMC.Shared.Components
+@using Markdig;
+
+<link rel="stylesheet" href="/css/product-page.css">
+<link rel="stylesheet" href="/css/gallery.css">
+
+<Navigation SelectedPage="1"></Navigation>
+
+
+
+<div id="page-content">
+
+    @if (IsLoading)
+    {
+        <span class="loading"></span>
+    }
+    else
+    {
+        <h1>@Name</h1>
+
+        <div class="row">
+            @switch (Tab)
+            {
+                case 0:
+                    <div id="description" class="col fill">
+                        @(new MarkupString(Body ?? ""))
+                    </div>
+                    break;
+                case 1:
+                    <div id="gallery-items" class="grid product-content">
+                    </div>
+                    break;
+            }
+            <div id="side-bar" class="col">
+                <div class="row">
+                    <div id="banner-image" style="background-image: url('@FeaturedImageUrl')"></div>
+                    <img id="icon" src="@IconUrl" alt="">
+                    <div id="page-title-info" class="col">
+                        <p id="title">@Name</p>
+                        <p id="type">@Type</p>
+                    </div>
+                </div>
+                <p id="summery">@Description</p>
+                <p id="downloads"> <i class="fa-solid fa-download"></i> <b>@Downloads</b> Downloads</p>
+                <p id="followers"> <i class="fa-solid fa-heart"></i> <b>@Followers</b> Followers</p>
+
+                <a href="@PageURL" class="button fill">View on @Source</a>
+
+            </div>
+        </div>
+    }
+
+
+    <div class="bottom-nav row alert center horizontal">
+        <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa-solid fa-bar-chart"></i>Overview</div>
+        @if (Images != null && Images.Any())
+        {
+            <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa-solid fa-images"></i>Gallery</div>
+        }
+        <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa-solid fa-file-zipper"></i>Versions</div>
+    </div>
+</div>
+@code {
+    private bool IsLoading { get; set; } = true;
+    [Parameter]
+    public string Source { get; set; }
+    [Parameter]
+    public string Id { get; set; }
+    public string PageURL { get; set; }
+    public string FeaturedImageUrl { get; set; } = "";
+    [Parameter]
+    public string[] Images { get; set; } = Array.Empty<string>();
+
+    [Parameter]
+    public string Name { get; set; }
+    [Parameter]
+    public string Description { get; set; }
+    [Parameter]
+    public string Body { get; set; }
+    [Parameter]
+    public string Type { get; set; }
+    [Parameter]
+    public int Downloads{ get; set; }
+    [Parameter]
+    public int Followers{ get; set; }
+    [Parameter]
+    public string IconUrl{ get; set; }
+
+    public int Tab { get; set; } = -1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Tab = 0;
+        await Refresh();
+    }
+
+
+    private async Task Refresh()
+    {
+        IsLoading = true;
+    }
+
+}

@@ -1,0 +1,44 @@
+﻿@using PolygonMC.Data;
+@inject NavigationManager navigation;
+<link rel="stylesheet" href="/css/nav.css">
+
+<nav class="col @(IsNavigationOpen?"open":"")">
+    <div id="nav-items" class="col center horizontal">
+        <div id="nav-expand" class="nav-item" @onclick="()=>IsNavigationOpen=!IsNavigationOpen"> <i class="fa fa-chevron-right"></i> <span>Close</span> </div>
+        <div class="nav-item @(SelectedPage == 0 ?"selected":"")" @onclick=ChangePageToInstances> <i class="fa fa-bookmark"></i> <span>Instances</span> </div>
+        <div class="nav-item @(SelectedPage == 1 ?"selected":"")" @onclick=ChangePageToDiscover> <i class="fa fa-compass"></i> <span>Discover</span> </div>
+    </div>
+    <div id="extra-items" class="col center horizontal">
+        <div class="nav-item @(SelectedPage == 2 ?"selected":"")" @onclick=ChangePageToAccounts> <i class="fa fa-bookmark"></i> <span>@Configuration.Instance.Username</span> </div>
+        <div class="nav-item @(SelectedPage == 3 ?"selected":"")" @onclick=ChangePageToSettings> <i class="fa fa-gear"></i> <span>Settings</span> </div>
+    </div>
+</nav>
+
+@code {
+
+    bool IsNavigationOpen { get; set; } = false;
+
+    [Parameter]
+    public int SelectedPage { get; set; }
+
+
+    void ChangePageToInstances()
+    {
+        navigation.NavigateTo("/instances");
+    }
+    void ChangePageToDiscover()
+    {
+        navigation.NavigateTo("/discover");
+    }
+    void ChangePageToAccounts()
+    {
+        File.Delete(MSAFile);
+        Configuration.Instance.Username = "";
+        Configuration.Instance.Save();
+        navigation.NavigateTo("/");
+
+    }
+    void ChangePageToSettings()
+    {
+    }
+}

@@ -1,0 +1,40 @@
+﻿body {
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), url("/images/minecraft-bg.png"), lightgray 50% / cover no-repeat;
+    background-attachment: fixed;
+    backdrop-filter: blur(10px);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#minecraft-login {
+    background-color: #1E1E1E;
+    position: relative;
+    width: 50vw;
+    max-width: 696px;
+    margin: auto;
+    padding: 5rem 0;
+    filter: drop-shadow(0px 2px 0px #000);
+}
+
+    #minecraft-login a {
+        position: absolute;
+        bottom: 1rem;
+    }
+
+    #minecraft-login .buttons {
+        height: 100%;
+        width: 90%;
+        overflow: hidden;
+    }
+
+img#minecraft-logo {
+    position: absolute;
+    transform: translate(0, -40%);
+    pointer-events: none;
+}

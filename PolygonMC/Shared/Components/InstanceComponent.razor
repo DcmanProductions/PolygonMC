@@ -1,0 +1,55 @@
+﻿@using Chase.Minecraft.Data;
+@inject NavigationManager navigation;
+<div class="instance-card col center horizontal" style="--image:url('@BackgroundImage')" @onclick=Open>
+
+    @if (IsInstalled)
+    {
+        <button class="big">play</button>
+    }
+    else
+    {
+        <button class="big">install</button>
+    }
+    <p class="name">@Name</p>
+    <div class="instance-data row center vertical">
+        <p class="mc-version">@MinecraftVersion</p>
+        <span class="seperator"></span>
+        <p class="modloader">@ModLoader.ToUpper()</p>
+        <span class="seperator"></span>
+        <p class="version">@Version</p>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public string BackgroundImage { get; set; } = "/images/minecraft-bg.png";
+    [Parameter]
+    public bool IsInstalled { get; set; }
+    [Parameter]
+    public string Name { get; set; }
+    [Parameter]
+    public string Version { get; set; }
+    [Parameter]
+    public string MinecraftVersion { get; set; }
+    [Parameter]
+    public string ModLoader { get; set; }
+    [Parameter]
+    public string Type { get; set; }
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public PlatformSource Source { get; set; }
+
+    private void Open()
+    {
+        if (IsInstalled)
+        {
+
+        }
+        else
+        {
+            navigation.NavigateTo($"/discover/product/{Source.ToString()}/{Id}");
+        }
+    }
+}

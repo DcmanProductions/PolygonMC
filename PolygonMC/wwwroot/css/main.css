@@ -1,0 +1,354 @@
+﻿@import url('scrollbar.css');
+@import url('/libraries/fontawesome/css/all.min.css');
+
+:root {
+    --primary: #00D267;
+    --background: #1E1E1E;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+@font-face {
+    font-family: "Minecraft Ten";
+    src: url('/fonts/Minecraft.ttf') format('truetype');
+    font-weight: 400;
+}
+
+body {
+    background: #111111;
+    margin: 0;
+    font-family: Poppins;
+    color: white;
+}
+
+:focus {
+    outline: none;
+}
+
+hr {
+    width: 100%;
+}
+
+.center, .row, .col, .grid {
+    display: flex;
+}
+
+.grid {
+    flex-wrap: wrap;
+}
+
+.center.horizontal {
+    align-items: center;
+}
+
+.center.vertical {
+    justify-content: center;
+}
+
+.col {
+    flex-direction: column;
+}
+
+.row {
+    flex-direction: row;
+}
+
+.fill {
+    width: 100%;
+}
+
+button, .button {
+    font-family: "Poppins";
+    text-transform: uppercase;
+    color: white !important;
+    font-size: 1rem;
+    text-align: center;
+    outline: none;
+    border: none;
+    overflow: hidden;
+    margin: 1rem;
+    padding: 1rem;
+    box-sizing: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #008e46;
+    width: auto;
+}
+
+    .button.big, button.big {
+        font-family: 'Minecraft Ten';
+        background-image: url(/images/Button.svg);
+        background-color: transparent;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        padding: 1.5rem;
+        padding-bottom: 2rem;
+        width: calc(100% - 5rem - 20px);
+        text-shadow: 0px 2px 0px BLACK;
+        aspect-ratio: 11/1;
+        font-size: 1.5rem;
+    }
+
+    .button.fancy, button.fancy {
+        font-family: 'Minecraft Ten';
+        padding: 1.5rem;
+        padding-bottom: 2rem;
+        width: calc(100% - 5rem - 20px);
+        text-shadow: 0px 2px 0px BLACK;
+        aspect-ratio: 11/1;
+        border-top: 5px solid #27ce40;
+        border-bottom: 5px solid #064d2a;
+        border-left: 5px solid #0c6e3d;
+        border-right: 5px solid #0c6e3d;
+        outline: 5px solid black;
+        background-image: none;
+        background-color: #008e46;
+    }
+
+    .button.fill, button.fill {
+        width: calc(100% - 4rem);
+    }
+
+    button.secondary, .button.secondary {
+        background-color: hsl(0, 0%, 26%);
+    }
+
+    button:hover, .button:hover {
+        cursor: pointer;
+        background-image: none;
+        background-color: #007439;
+    }
+
+    .button.big:hover, button.big:hover {
+        background-image: url(/images/Button-hover.svg);
+        background-color: transparent;
+    }
+
+    button.secondary:hover, .button.secondary:hover {
+        background-image: none;
+        background-color: hsl(0, 0%, 15%);
+    }
+
+a {
+    color: white;
+    text-shadow: none;
+    position: relative;
+}
+
+    a.external::before {
+        position: absolute;
+        content: "\f08e";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        right: -2rem;
+        font-size: 1.2rem;
+    }
+
+.primary {
+    color: var(--primary);
+}
+
+.alert {
+    position: fixed;
+    bottom: 2rem;
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: var(--background);
+    box-shadow: 0 2px 0 0 BLACK;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: transform 1s;
+    position: fixed;
+    bottom: 2rem;
+    padding: 2rem 4rem;
+    text-wrap: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: var(--background);
+    box-shadow: 0 2px 0 0 BLACK;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: transform 1s;
+    z-index: 1;
+}
+
+    .alert .button.secondary {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 5px;
+        font-size: 12px;
+        transform: translate(10px, -10px);
+    }
+
+    .alert.remove {
+        transform: translate(-50%, 200%);
+    }
+
+input[type=text], input[type=email], input[type=password], input[type=number], input[type=search], input[type=url] {
+    background-color: hsl(0, 0%, 15%);
+    color: white;
+    padding: 2rem;
+    border: 1px solid transparent;
+    font-family: "Poppins";
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    border: 1px solid var(--primary);
+}
+
+#page-content {
+    --bottom: 140px;
+    margin: 1rem;
+    padding-right: 1rem;
+    margin-left: 5rem;
+    overflow-y: scroll;
+    max-height: calc(100vh - var(--bottom) - 32px);
+    height: calc(100vh - var(--bottom) - 32px);
+    padding-bottom: var(--bottom);
+}
+
+.loading {
+    --scale: 5px;
+    position: absolute;
+    aspect-ratio: 1;
+    width: 100px;
+    left: 50%;
+    top: 50%;
+    border: var(--scale) solid transparent;
+    border-left: var(--scale) solid var(--primary);
+    border-radius: 100%;
+    animation-name: Spin;
+    animation-iteration-count: infinite;
+    animation-duration: 500ms;
+    animation-timing-function: linear;
+}
+
+@keyframes Spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.dropdown {
+    position: relative;
+    background-color: hsl(0,0%,26%);
+    padding: 1rem;
+    margin: 1rem;
+    font-size: 1rem;
+    min-width: 5rem;
+    text-align: center;
+    font-weight: 400;
+}
+
+
+    .dropdown:hover, .dropdown:focus {
+        cursor: pointer;
+        background-color: hsl(0,0%,15%);
+    }
+
+        .dropdown:focus .dropdown-items {
+            display: block;
+            z-index: 1;
+        }
+
+    .dropdown .dropdown-items {
+        display: none;
+        position: absolute;
+        background: hsl(0,0%,15%);
+        width: 100%;
+        left: 0;
+        transform: translateY(1rem);
+        box-shadow: 0 0 10px 0 black;
+    }
+
+        .dropdown .dropdown-items .dropdown-item {
+            padding: .5rem 0;
+        }
+
+            .dropdown .dropdown-items .dropdown-item:hover {
+                background-color: hsl(0,0%,25%);
+            }
+
+            .dropdown .dropdown-items .dropdown-item.selected {
+                background-color: hsl(0,0%,10%);
+            }
+
+.checkbox {
+    cursor: pointer;
+    padding: 1rem;
+    max-width: calc(100% - 2rem);
+}
+
+    .checkbox:hover {
+        background-color: hsl(0,0%,5%);
+    }
+
+    .checkbox .title {
+        padding-right: 4rem;
+        width: 100%;
+    }
+
+    .checkbox .checkmark {
+        background-color: hsl(0,0%,15%);
+        padding: 10px;
+        max-width: 2rem;
+        max-height: 2rem;
+        aspect-ratio: 1;
+        font-size: 1rem;
+        color: transparent;
+    }
+
+        .checkbox .checkmark.checked {
+            background-color: var(--primary);
+            color: black;
+        }
+
+.popup {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,.5);
+    backdrop-filter: blur(8px);
+    z-index: 2;
+}
+
+.popup-content {
+    position: absolute;
+    max-width: calc(75% - 8rem);
+    max-height: calc(75% - 2rem);
+    margin: auto;
+    background-color: var(--background);
+    z-index: 1;
+    inset: 0;
+    padding: 1rem 4rem;
+}
+
+    .popup-content label {
+        width: 100%;
+        padding-right: 2rem;
+    }
+
+.popup #close-button {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
+
+.popup h2 {
+    font-size: 2rem;
+}
+

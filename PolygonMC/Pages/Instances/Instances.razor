@@ -1,0 +1,20 @@
+﻿@using PolygonMC.Shared.Components
+@page "/instances"
+
+<Navigation SelectedPage="0"></Navigation>
+
+<link rel="stylesheet" href="/css/instances.css">
+<div id="page-content">
+    <h1>Instances</h1>
+    <div id="instances-grid" class="grid">
+        @for (int i = 0; i < 5; i++)
+        {
+            <InstanceComponent Name="Modpack Name" IsInstalled=true ModLoader="Fabric" MinecraftVersion="1.19.1" Type="Custom" Version="0.0.1"></InstanceComponent>
+        }
+    </div>
+</div>
+
+
+@code {
+
+}

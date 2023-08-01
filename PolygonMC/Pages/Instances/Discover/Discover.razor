@@ -1,0 +1,90 @@
+﻿@page "/discover";
+
+@using PolygonMC.Models;
+@using PolygonMC.Shared.Components
+
+<Navigation SelectedPage="1"></Navigation>
+
+<div id="page-content">
+    <link rel="stylesheet" href="/css/instances.css">
+
+    <div class="col" style="max-height: 96vh;">
+
+        <div class="page-title row center horizontal">
+            <span class="fill">Discover</span>
+            <div class="row">
+                <div id="limit-dropdown" class="dropdown" tabindex="0">
+                    <div class="value">@ItemsPerPage</div>
+                    <div class="dropdown-items">
+                        <div class="dropdown-item @(ItemsPerPage==10?"selected":"")" @onclick="() => SetItemsPerPage(10)">10</div>
+                        <div class="dropdown-item @(ItemsPerPage==25?"selected":"")" @onclick="() => SetItemsPerPage(25)">25</div>
+                        <div class="dropdown-item @(ItemsPerPage==30?"selected":"")" @onclick="() => SetItemsPerPage(30)">30</div>
+                        <div class="dropdown-item @(ItemsPerPage==50?"selected":"")" @onclick="() => SetItemsPerPage(50)">50</div>
+                        <div class="dropdown-item @(ItemsPerPage==100?"selected":"")" @onclick="() => SetItemsPerPage(100)">100</div>
+                    </div>
+                </div>
+                <button class="secondary fa fa-sliders" @onclick="()=>IsFilterPopupOpen=true"></button>
+            </div>
+        </div>
+        <input type="search" name="search-box" id="search-box" placeholder="Search" />
+
+        @if (IsFilterPopupOpen)
+        {
+            <ModpackFilters OnClose="()=>IsFilterPopupOpen=false"></ModpackFilters>
+        }
+
+        @if (IsLoading)
+        {
+            <span class="loading"></span>
+        }
+        <div id="instances-grid" class="grid">
+            @switch (Tab)
+            {
+                case 0:
+                    break;
+            }
+        </div>
+
+        <Pagination></Pagination>
+
+
+        <div class="bottom-nav row alert center horizontal"  >
+            <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-boxes-packing"></i>Modpacks</div>
+            <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
+            <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
+            <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-mortar-pestle"></i>Data Packs</div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+
+    private int Tab { get; set; } = -1;
+    private bool IsLoading { get; set; } = true;
+    private bool IsFilterPopupOpen { get; set; } = false;
+    private int ItemsPerPage { get; set; } = 10;
+    private int Pages { get; set; }
+    private int CurrentPage { get; set; } = 0;
+    private string Query { get; set; } = "";
+    private Timer debouncer;
+    private CancellationTokenSource debounceTokenSource;
+    private ModpackFiltersModel Filter { get; set; } = new();
+
+
+    private EventCallback SetItemsPerPage(int items)
+    {
+        ItemsPerPage = items;
+        return new EventCallback();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Tab = 0;
+        SetItemsPerPage(10);
+    }
+
+
+
+
+}

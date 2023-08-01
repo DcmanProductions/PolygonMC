@@ -1,0 +1,15 @@
+﻿<div class="pagination">
+    @for (int i = CurrentPage; i < TotalPages && i < CurrentPage + 8; i++)
+    {
+        <span class="pagination-item" @onclick="()=>{OnPageChange.Invoke(i);CurrentPage=i;}">@i</span>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int TotalPages { get; set; }
+    [Parameter]
+    public int CurrentPage { get; set; }
+    [Parameter]
+    public Action<int> OnPageChange { get; set; } = i => { };
+}

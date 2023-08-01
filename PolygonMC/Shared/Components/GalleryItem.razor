@@ -1,0 +1,22 @@
+﻿
+<div class="gallery-item" style="background-image: url('@Image')" @onclick="()=>IsFullscreen=true">
+    <div class="gallery-info">
+        <div class="gallery-title">@Title</div>
+        <div class="gallery-description">@Description</div>
+    </div>
+</div>
+
+@if (IsFullscreen)
+{
+    <FullscreenGalleryItem Title="@Title" Description="@Description" Image="@Image" OnClose="()=>IsFullscreen=false" NextImage="NextImage" PreviousImage="PreviousImage"></FullscreenGalleryItem>
+}
+
+@code {
+    [Parameter]
+    public string Image { get; set; }
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public string Description { get; set; }
+    private bool IsFullscreen { get; set; }
+}

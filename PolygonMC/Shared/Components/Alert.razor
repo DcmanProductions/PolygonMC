@@ -1,0 +1,11 @@
+﻿
+<div class="alert" id="association-message">
+    <span class="primary"><b>NOTE:</b></span>
+    <i style="margin-left: 1rem"> <u>@Message</u> </i>
+    <button class="close-button button secondary fa fa-solid fa-x" onclick="CloseAlert(this.parentElement)"></button>
+</div>
+
+@code {
+    [Parameter]
+    public string Message { get; set; }
+}

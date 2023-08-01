@@ -1,0 +1,39 @@
+﻿@page "/login/offline"
+@using PolygonMC.Data;
+@inject NavigationManager Navigation;
+<link rel="stylesheet" href="/css/welcome.css">
+
+<div class="col center horizontal vertical" id="minecraft-login">
+    <img id="minecraft-logo" src="\images\minecraft-logo.svg" alt="">
+
+    <EditForm Model=@FormData class="buttons col" OnSubmit="Submit">
+        <label for="login-email">Username</label>
+        <input type="text" id="login-email" placeholder="user123" @bind-value=FormData.Username autocomplete="off" autofocus="true">
+        <button id="offline-login" class="primary button big" type="submit">Offline</button>
+    </EditForm>
+
+    <a href="/" title="Go back to the welcome screen">Back to Welcome screen</a>
+</div>
+
+@code {
+
+    LoginFormModel FormData = new();
+
+    void Submit(EditContext context)
+    {
+        if (context.Validate())
+        {
+            string username = ((LoginFormModel)context.Model).Username;
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                Configuration.Instance.Username = username;
+                Navigation.NavigateTo("/instances");
+            }
+        }
+    }
+
+    class LoginFormModel
+    {
+        public string Username { get; set; }
+    }
+}

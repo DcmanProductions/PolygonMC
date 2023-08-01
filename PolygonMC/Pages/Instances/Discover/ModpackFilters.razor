@@ -1,0 +1,52 @@
+﻿@using Chase.Minecraft.Modrinth.Controller;
+@using PolygonMC.Models;
+@using PolygonMC.Shared.Components
+
+<div class="popup">
+    <div class="popup-content">
+        <button id="close-button" class="secondary fa fa-close" @onclick=OnClose></button>
+        <h2>Filters</h2>
+        <div id="filters" class="col">
+            <div class="row">
+                <div class="col category">
+                    <p class="category-title">Sources</p>
+                    <Checkbox Title="Modrinth" OnChecked="value=>{Filter.ShowModrinth = value;OnChange.Invoke(Filter);}"></Checkbox>
+                    <Checkbox Title="CurseForge" OnChecked="value=>{Filter.ShowCurseForge = value;OnChange.Invoke(Filter);}"></Checkbox>
+                </div>
+                <div class="col category">
+                    <p class="category-title">Mod Loaders</p>
+                    <Checkbox Title="Fabric" OnChecked="value=>{Filter.ShowFabric = value;OnChange.Invoke(Filter);}"></Checkbox>
+                    <Checkbox Title="Forge" OnChecked="value=>{Filter.ShowForge= value;OnChange.Invoke(Filter);}"></Checkbox>
+                    <Checkbox Title="Quilt" OnChecked="value=>{Filter.ShowQuilt = value;OnChange.Invoke(Filter);}"></Checkbox>
+                </div>
+            </div>
+
+            <div class="col category">
+                <p class="category-title">Categories</p>
+                @foreach (string category in Categories)
+                {
+                    <Checkbox Title="@category" OnChecked="value=>{Filter.Categories.Add(category);OnChange.Invoke(Filter);}"></Checkbox>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string MinecraftVersion { get; set; }
+    [Parameter]
+    public Action OnClose { get; set; }
+    [Parameter]
+    public ModpackFiltersModel Filter { get; set; } = new();
+    [Parameter]
+    public Action<ModpackFiltersModel> OnChange { get; set; } = a => { };
+    [Parameter]
+    public string[] Categories { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Categories = new ModrinthClient().GetCategories().Select(i => i.Name).ToArray();
+    }
+}
