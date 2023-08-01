@@ -2,8 +2,14 @@
 @using Chase.Minecraft.Authentication;
 @using Chase.Minecraft.Model;
 @using PolygonMC.Data;
+@using PolygonMC.Shared.Components;
 @inject NavigationManager Navigation
 
+
+@if (IsLoading)
+{
+    <LoadingComponent Title="Continue in browser..." Message="A browser window should have open with a prompt to login."></LoadingComponent>
+}
 
 @if (IsAuthenticated)
 {
@@ -25,6 +31,7 @@
 <Alert Message="This software is a not associated with Mojang or Microsoft"></Alert>
 
 @code {
+    private bool IsLoading { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,13 +44,14 @@
                 IsAuthenticated = true;
                 AuthenticationToken = auth;
             }
-
         }
     }
 
     private async Task Login()
     {
-        string? token = await MicrosoftAuthentication.GetMinecraftBearerAccessToken(MinecraftClientID, MicrosoftRedirectURI, MSAFile, true);
+        IsLoading = true;
+        StateHasChanged();
+        string? token = await MicrosoftAuthentication.GetMinecraftBearerAccessToken(MinecraftClientID, MicrosoftRedirectURI, MSAFile, html: File.ReadAllText(Path.Combine(ApplicationDirectory, "wwwroot", "successfully-logged-in.html")));
         AuthenticationToken = token;
         UserProfile? user = await MicrosoftAuthentication.GetUserProfile(token);
         if (user != null)
@@ -52,6 +60,8 @@
             Configuration.Instance.Username = user.Value.Name;
         }
         Configuration.Instance.Save();
+        IsLoading = false;
+        Navigation.NavigateTo("/instances");
     }
     private void LoginOffline()
     {
