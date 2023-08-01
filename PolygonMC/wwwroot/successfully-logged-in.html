@@ -1,0 +1,318 @@
+<!--
+    PolygonMC - LFInteractive LLC. 2021-2024
+    PolygonMC is a free and open source Minecraft Launcher implementing various modloaders, mod platforms, and minecraft authentication.
+    PolygonMC is protected under GNU GENERAL PUBLIC LICENSE version 3.0 License
+    https://www.gnu.org/licenses/gpl-3.0.en.html#license-text
+    https://github.com/DcmanProductions/PolygonMC
+ -->
+<html>
+
+<head>
+    <style>
+        @import url(https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap);
+
+        :root {
+            --primary: hsl(149, 100%, 43%);
+            --foreground: hsl(0, 0%, 95%);
+            --background: hsl(0, 0%, 5%);
+            font-family: Poppins
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            color: var(--foreground);
+            background-color: var(--background)
+        }
+
+        .center,
+        .col,
+        .row {
+            display: flex;
+            flex-wrap: nowrap;
+            width: auto;
+            height: auto
+        }
+
+        .center {
+            justify-content: center;
+            align-items: center
+        }
+
+        .col {
+            flex-direction: column
+        }
+
+        .row {
+            flex-direction: row
+        }
+
+        h1 {
+            font-size: 8rem
+        }
+
+        h2 {
+            font-size: 6rem
+        }
+
+        h3 {
+            font-size: 4rem
+        }
+
+        h4 {
+            font-size: 3rem
+        }
+
+        h5 {
+            font-size: 2rem
+        }
+
+        p.error {
+            color: red;
+            font-size: 1rem;
+            text-decoration: underline
+        }
+
+        .no-select {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -moz-user-select: none;
+            user-select: none
+        }
+
+        input.error,
+        input.error:focus {
+            outline: 2px dotted red
+        }
+
+        input {
+            font-family: Roboto;
+            border: none
+        }
+
+            input,
+            input[type=date],
+            input[type=time] {
+                padding: 3rem;
+                font-size: 1.5rem
+            }
+
+        input {
+            margin-bottom: 1rem;
+            margin-right: 1rem
+        }
+
+            input[type=time] {
+                text-align: center;
+                width: 30%
+            }
+
+            input[type=number] {
+                text-align: center
+            }
+
+            input:focus {
+                outline: 1px solid var(--primary)
+            }
+
+            input[type=month] {
+                text-align: center
+            }
+
+            input::-webkit-inner-spin-button,
+            input::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0
+            }
+
+            input[type=number] {
+                -moz-appearance: textfield
+            }
+
+        :root {
+            --button-border-radius: 100px
+        }
+
+        a:not(.btn) {
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: -webkit-filter .2s;
+            transition: filter .2s;
+            transition: filter .2s, -webkit-filter .2s
+        }
+
+            a:not(.btn):hover {
+                -webkit-filter: brightness(1.1);
+                filter: brightness(1.1)
+            }
+
+        button {
+            outline: 0;
+            border: none
+        }
+
+        .btn {
+            text-decoration: none;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            background-color: var(--primary);
+            color: var(--background);
+            border-radius: 0;
+            padding: 1.5rem 2rem;
+            margin: .5rem;
+            box-shadow: 0 0 0 0 transparent;
+            transition: box-shadow, background-color, color, transform, -webkit-filter !important;
+            transition: box-shadow, filter, background-color, color, transform !important;
+            transition: box-shadow, filter, background-color, color, transform, -webkit-filter !important;
+            transition-duration: .2s !important;
+            font-weight: 700;
+            font-size: 1.125rem
+        }
+
+            .btn:hover {
+                box-shadow: 0 0 10px 0 rgba(0, 0, 0, .15);
+                background-color: var(--primary);
+                color: var(--background);
+                transform: scale(1.03)
+            }
+
+            .btn .icon.left,
+            .btn i.right {
+                margin-right: 1rem
+            }
+
+            .btn .icon.left,
+            .btn i.left {
+                margin-left: 1rem
+            }
+
+            .btn.secondary {
+                color: var(--background);
+                background-color: #fff
+            }
+
+                .btn.secondary:hover {
+                    background-color: var(--primary);
+                    color: var(--background)
+                }
+
+            .btn.dark {
+                color: #fff;
+                background-color: #000
+            }
+
+            .btn.light {
+                color: #000;
+                background-color: #fff
+            }
+
+        :root {
+            --scrollbar-width: 10px;
+            scroll-behavior: smooth;
+            scrollbar-width: var(--scrollbar-width);
+            scrollbar-color: var(--primary) transparent
+        }
+
+        body {
+            overflow: overlay
+        }
+
+        ::-webkit-scrollbar {
+            width: var(--scrollbar-width)
+        }
+
+        ::-webkit-scrollbar-thumb {
+            width: var(--scrollbar-width);
+            background: var(--primary);
+            border-radius: 100px
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: rgba(0, 0, 0, .25)
+        }
+
+        ::-webkit-scrollbar-corner {
+            background-color: transparent
+        }
+
+        #landing {
+            height: 100vh;
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px 5px rgba(0, 0, 0, .25);
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            box-shadow: 0 4px 20px 5px rgba(0, 0, 0, .25)
+        }
+
+            #landing img#banner-image {
+                display: flex;
+                width: 65%;
+                max-width: 1920px;
+                padding: 43px 4.65px 22.84px 0;
+                align-items: flex-start;
+                gap: 3.879px;
+                flex-shrink: 0
+            }
+
+            #landing #landing-cta {
+                width: 30%;
+                min-width: 500px;
+                max-width: 900px
+            }
+
+                #landing #landing-cta .btn {
+                    width: 100%
+                }
+
+            #landing #landing-subtitle {
+                text-align: center;
+                font-size: 2.5rem;
+            }
+    </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolygonMC - For a better Minecrafting expirence!</title>
+    <link rel="shortcut icon" href="https://polygonmc.lfinteractive.net/assets/images/logo.svg" type="image/x-icon">
+</head>
+
+<body>
+    <div id="landing" class="col center horizontal vertical">
+        <svg id="banner-image" width="862" height="188" viewBox="0 0 862 188" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g filter="url(#filter0_d_325_19)">
+                <path d="M136.221 111.38H185.163V55.22H136.221V111.38ZM198.119 55.22V111.38L186.603 122.9H136.221V144.5H123.266V43.7H186.603L198.119 55.22Z" fill="white" />
+                <path d="M211.811 131.54V76.82L224.766 63.86H269.39L282.345 76.82V131.54L269.39 144.5H224.766L211.811 131.54ZM224.766 132.98H269.39V75.38H224.766V132.98Z" fill="white" />
+                <path d="M298.843 144.5V43.7H311.798V144.5H298.843Z" fill="white" />
+                <path d="M326.332 164.66V153.14H363.902L370.092 132.98H345.477L322.013 63.86H335.112L354.689 121.46H373.547L392.116 63.86H405.215L372.971 164.66H326.332Z" fill="white" />
+                <path d="M419.698 164.66V153.14H472.958V132.98H427.615L414.659 120.02V76.82L429.054 63.86H485.914V151.124L472.383 164.66H419.698ZM427.615 75.38V121.46H472.958V75.38H427.615Z" fill="white" />
+                <path d="M502.518 131.54V76.82L515.474 63.86H560.098L573.053 76.82V131.54L560.098 144.5H515.474L502.518 131.54ZM515.474 132.98H560.098V75.38H515.474V132.98Z" fill="white" />
+                <path d="M589.551 144.5V63.86H648.569L661.525 76.82V144.5H648.569V75.38H602.506V144.5H589.551Z" fill="white" />
+                <path d="M678.815 144.5V43.7H695.226L726.318 98.132L757.411 43.7H773.821V144.5H761.154V59.54L730.637 112.82H722L691.483 59.54V144.5H678.815Z" fill="white" />
+                <path d="M791.134 132.98V55.22L802.65 43.7H855.911V55.508H804.09V132.692H857.35V144.5H802.65L791.134 132.98Z" fill="white" />
+                <path d="M119.387 137.286C119.387 141.276 116.164 144.5 112.175 144.5C98.6985 144.5 87.9486 137.669 79.1368 128.854C72.8266 122.542 67.0798 114.764 61.6936 106.918L61.3104 106.354C59.485 103.672 57.6821 100.989 55.9242 98.3511L55.6989 97.9904C54.7974 96.6377 53.9185 95.3076 53.017 93.9774C49.8619 89.2656 46.7744 84.7792 43.6644 80.6085L43.6643 107.369C45.3321 105.16 46.9772 102.837 48.6449 100.448L49.7041 102.026L50.1549 102.702C52.4311 106.106 54.7974 109.669 57.2764 113.231C53.1973 118.867 48.8703 124.255 44.2728 128.877C35.4385 137.669 24.6886 144.5 11.2117 144.5C7.22277 144.5 4.00006 141.276 4.00006 137.286C4.00006 133.295 7.22277 130.071 11.2117 130.071L11.2117 57.9285C7.22278 57.9285 4.00006 54.7047 4.00006 50.7143C4.00006 46.7238 7.22278 43.5 11.2117 43.5C24.6886 43.5 35.4385 50.331 44.2503 59.146C50.5605 65.4585 56.3073 73.2364 61.6936 81.0819C67.0798 73.2364 72.8041 65.4585 79.1368 59.146C87.9486 50.331 98.6986 43.5 112.175 43.5C116.164 43.5 119.387 46.7239 119.387 50.7143C119.387 54.7047 116.164 57.9285 112.175 57.9285L112.175 130.071C116.164 130.071 119.387 133.295 119.387 137.286ZM32.8468 119.836L32.8468 68.1638C30.4579 65.8868 28.0465 63.9705 25.6351 62.4149L25.6351 125.585C28.0465 124.052 30.4579 122.136 32.8468 119.836ZM90.5403 68.1638L90.5403 119.836C92.9517 122.113 95.3406 124.029 97.752 125.585L97.752 62.4149C95.3406 63.948 92.9517 65.8643 90.5403 68.1638ZM79.7228 80.6536C76.6128 84.8018 73.5252 89.3107 70.3701 94.0225C73.5252 98.7344 76.6128 103.221 79.7228 107.392L79.7228 80.631L79.7228 80.6536Z" fill="url(#paint0_linear_325_19)" />
+            </g>
+            <defs>
+                <filter id="filter0_d_325_19" x="0" y="0.5" width="866" height="195" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                    <feOffset dy="4" />
+                    <feGaussianBlur stdDeviation="2" />
+                    <feComposite in2="hardAlpha" operator="out" />
+                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0" />
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_325_19" />
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_325_19" result="shape" />
+                </filter>
+                <linearGradient id="paint0_linear_325_19" x1="61.6935" y1="62.4643" x2="61.6935" y2="144.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#60FFAE" />
+                    <stop offset="1" stop-color="#00D267" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <p id="landing-subtitle" class="subtitle">You can now close this tab!</p>
+    </div>
+</body>
+</html>
