@@ -1,0 +1,34 @@
+﻿<h3>@Name</h3>
+<div class="col list-body">
+    @foreach (string item in Items)
+    {
+        <div class="list-item @(SelectedItem==item?"selected":"")" @onclick="()=>{SelectedItem=item;OnItemSelect.Invoke(item);}">@item</div>
+    }
+
+</div>
+@if (Categories.Any())
+{
+    <div class="list-category bottom-nav row alert center horizontal">
+        @foreach (string category in Categories)
+        {
+            <div class="nav-item @(category == SelectedCategory ?"selected":"")" @onclick="()=>{SelectedCategory=category;OnCategorySelect.Invoke(category);}">@category</div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Name { get; set; }
+    [Parameter]
+    public string[] Items { get; set; }
+    [Parameter]
+    public string[] Categories { get; set; } = Array.Empty<string>();
+    [Parameter]
+    public Action<string> OnItemSelect { get; set; } = item => { };
+    [Parameter]
+    public Action<string> OnCategorySelect { get; set; } = item => { };
+    [Parameter]
+    public string SelectedItem { get; set; }
+    [Parameter]
+    public string SelectedCategory { get; set; }
+}
