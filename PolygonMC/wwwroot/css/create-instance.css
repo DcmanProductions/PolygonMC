@@ -1,0 +1,75 @@
+/*
+    PolygonMC - LFInteractive LLC. 2021-2024
+    PolygonMC is a free and open source Minecraft Launcher implementing various modloaders, mod platforms, and minecraft authentication.
+    PolygonMC is protected under GNU GENERAL PUBLIC LICENSE version 3.0 License
+    https://www.gnu.org/licenses/gpl-3.0.en.html#license-text
+    https://github.com/DcmanProductions/PolygonMC
+*/
+
+.page-title > .row {
+    font-size: 1rem;
+}
+
+    .page-title > .row a {
+        text-decoration: none;
+    }
+
+    .page-title > .row > * {
+        min-width: 200px;
+    }
+
+    .page-title > .row span {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+.page-title > .row {
+    font-size: 1rem;
+    font-weight: 400;
+    text-align: center;
+}
+
+.image-input {
+    width: 25%;
+    aspect-ratio: 1/1.25;
+    background: #060606;
+    margin: 1rem 1px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+    .image-input:hover {
+        cursor: pointer;
+        outline: 1px solid var(--primary);
+    }
+
+textarea {
+    height: -webkit-fill-available;
+    resize: none;
+    width: calc(100% - 4rem - 2px - 20px) !important;
+}
+
+#create-instance-form * {
+    margin: 10px;
+}
+
+.list-body .list-item {
+    margin: 0 !important;
+}
+
+#create-instance-form {
+    padding-bottom: 200px;
+}
+
+.list-category {
+    padding: 0;
+    position: relative;
+    width: 450px;
+}
+
+    .list-category .nav-item {
+        padding: 1rem;
+        text-transform: uppercase;
+    }
