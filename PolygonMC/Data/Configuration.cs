@@ -9,32 +9,42 @@
 using Chase.Minecraft.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace PolygonMC.Data;
 
 internal sealed class Configuration
 {
     [JsonIgnore]
-    public static Configuration Instance = Instance ??= new();
+    public static Configuration Instance = new();
 
     [JsonIgnore]
-    private readonly string configFile = Path.Combine(ApplicationDirectory, "settings.json");
+    private readonly string configFile;
 
     [JsonProperty("directory")]
-    public string WorkingDirectory { get; set; } = ApplicationDirectory;
+    public string WorkingDirectory { get; set; }
 
     [JsonProperty("username")]
-    public string Username { get; set; } = "";
+    public string Username { get; set; }
 
     [JsonProperty("profile")]
     public UserProfile Profile { get; set; }
 
     private Configuration()
     {
+        Instance = this;
+        WorkingDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location ?? "").FullName;
+        Username = "";
+        Profile = new UserProfile();
+        configFile = Path.Combine(WorkingDirectory, "settings.json");
     }
 
     public void Load()
     {
+        if (!File.Exists(configFile))
+        {
+            Save();
+        }
         Instance = JObject.Parse(File.OpenText(configFile).ReadToEnd())?.ToObject<Configuration>() ?? Instance;
     }
 
