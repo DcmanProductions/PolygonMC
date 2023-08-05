@@ -1,20 +1,59 @@
-﻿@using PolygonMC.Shared.Components
+﻿@using Chase.Minecraft.Model;
+@using PolygonMC.Data;
+@using PolygonMC.Shared.Components
+@using Chase.Minecraft.Data;
+@using PolygonMC.Models;
 @page "/instances"
+
+
 
 <Navigation SelectedPage="0"></Navigation>
 
-<link rel="stylesheet" href="/css/instances.css">
 <div id="page-content">
-    <h1>Instances</h1>
-    <div id="instances-grid" class="grid">
-        @for (int i = 0; i < 5; i++)
+    <link rel="stylesheet" href="/css/instances.css">
+
+    <div class="col" style="max-height: 96vh;">
+
+        <div class="page-title row center horizontal">
+            <span class="fill">Instances</span>
+            <div class="row">
+                <a href="/instances/create" class="fa fa-plus button secondary"></a>
+            </div>
+        </div>
+        <input type="search" name="search-box" id="search-box" placeholder="Search" />
+
+        @if (IsLoading)
         {
-            <InstanceComponent Name="Modpack Name" IsInstalled=true ModLoader="Fabric" MinecraftVersion="1.19.1" Type="Custom" Version="0.0.1"></InstanceComponent>
+            <span class="loading"></span>
         }
+        <div id="instances-grid" class="grid">
+            @if (!InstanceManager.Instances.Any())
+            {
+                <div class="col fill center horizontal vertical">
+                    <h2>No Instances Found</h2>
+                    <h4>Click <a href="/instances/create">here</a> to create one</h4>
+                </div>
+
+            }
+            else
+            {
+                @foreach (InstanceModel instance in InstanceManager.Instances.Values)
+                {
+                    <InstanceComponent Id="@instance.Id.ToString()" IsInstalled=true BackgroundImage="@instance.Image" MinecraftVersion="@instance.MinecraftVersion.ID" ModLoader="@instance.ModLoader.Modloader.ToString()" Name="@instance.Name" Source="instance.Source" Version="@instance.MinecraftVersion.ID" />
+                }
+            }
+        </div>
+
     </div>
 </div>
 
-
 @code {
 
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = false;
+        await base.OnInitializedAsync();
+    }
 }
