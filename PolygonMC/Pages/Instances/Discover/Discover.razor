@@ -1,5 +1,6 @@
 ﻿@page "/discover";
 
+@using Chase.Minecraft.Data;
 @using PolygonMC.Models;
 @using PolygonMC.Shared.Components
 
@@ -13,6 +14,18 @@
         <div class="page-title row center horizontal">
             <span class="fill">Discover</span>
             <div class="row">
+                <div id="source-dropdown" class="dropdown" tabindex="0">
+                    <div class="value">@Source</div>
+                    <div class="dropdown-items">
+                        @foreach (PlatformSource source in Enum.GetValues(typeof(PlatformSource)))
+                        {
+                            @if (source != PlatformSource.Unknown)
+                            {
+                                <div class="dropdown-item @(Source==source?"selected":"")" @onclick="() => Source=source">@source</div>
+                            }
+                        }
+                    </div>
+                </div>
                 <div id="limit-dropdown" class="dropdown" tabindex="0">
                     <div class="value">@ItemsPerPage</div>
                     <div class="dropdown-items">
@@ -48,7 +61,7 @@
         <Pagination></Pagination>
 
 
-        <div class="bottom-nav row alert center horizontal"  >
+        <div class="bottom-nav row alert center horizontal">
             <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-boxes-packing"></i>Modpacks</div>
             <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
             <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
@@ -67,6 +80,7 @@
     private int Pages { get; set; }
     private int CurrentPage { get; set; } = 0;
     private string Query { get; set; } = "";
+    private PlatformSource Source { get; set; } = PlatformSource.Curseforge;
     private Timer debouncer;
     private CancellationTokenSource debounceTokenSource;
     private ModpackFiltersModel Filter { get; set; } = new();
@@ -83,8 +97,4 @@
         Tab = 0;
         SetItemsPerPage(10);
     }
-
-
-
-
 }
