@@ -7,19 +7,21 @@
 */
 
 global using static PolygonMC.Data.Constants;
+using Chase.Minecraft.Instances;
 using System.Reflection;
 
 namespace PolygonMC.Data;
 
 public static class Constants
 {
-    public static readonly string ApplicationName = "PolygonMC";
-    public static readonly AssemblyName ApplicationAssembly = Assembly.GetExecutingAssembly().GetName();
-    public static readonly Version ApplicationVersion = ApplicationAssembly.Version;
-    public static readonly string ApplicationDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-    public static readonly string MinecraftClientID = "f8b88f7d-77d7-49ca-9b97-5bb12a4ee48f";
-    public static readonly string MicrosoftRedirectURI = "http://127.0.0.1:56748";
-    public static readonly string MSAFile = Path.Combine(ApplicationDirectory, "msa-auth.json");
-    public static bool IsAuthenticated = false;
-    public static string AuthenticationToken = "";
+    public static string ApplicationName { get; } = "PolygonMC";
+    public static AssemblyName ApplicationAssembly { get; } = Assembly.GetExecutingAssembly().GetName();
+    public static Version ApplicationVersion { get; } = ApplicationAssembly.Version;
+    public static string ApplicationDirectory { get; } = Directory.GetParent(Assembly.GetExecutingAssembly().Location ?? "").FullName;
+    public static string MinecraftClientID { get; } = "f8b88f7d-77d7-49ca-9b97-5bb12a4ee48f";
+    public static string MicrosoftRedirectURI { get; } = "http://127.0.0.1:56748";
+    public static string MSAFile { get; } = Path.Combine(Configuration.Instance.WorkingDirectory, "msa-auth.json");
+    public static InstanceManager InstanceManager { get; } = new(Path.Combine(Configuration.Instance.WorkingDirectory, "instances"));
+    public static bool IsAuthenticated { get; set; } = false;
+    public static string AuthenticationToken { get; set; } = "";
 }
