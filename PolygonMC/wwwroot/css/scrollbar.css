@@ -24,8 +24,8 @@ body {
 
 ::-webkit-scrollbar-track {
     border-radius: 100px;
-    background-color: #080808;
-/*     background-color: transparent; */
+/*    background-color: #080808;*/
+     background-color: transparent; 
 }
 
 ::-webkit-scrollbar-corner {
