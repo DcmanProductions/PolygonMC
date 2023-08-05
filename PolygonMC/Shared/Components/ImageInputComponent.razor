@@ -1,0 +1,30 @@
+﻿@using System.Windows.Forms;
+@if (!string.IsNullOrWhiteSpace(ImageBase64))
+{
+    <div class="image-input" style="background-image: url(data:image/png;base64,@ImageBase64)" @onclick=OpenFileSystem></div>
+}
+else
+{
+    <div class="image-input" style="background-image: url('/images/minecraft-bg.png')" @onclick=OpenFileSystem></div>
+}
+
+@code {
+    public string ImageBase64 { get; set; }
+
+    private async Task OpenFileSystem()
+    {
+        OpenFileDialog fileDialog = new OpenFileDialog
+            {
+                Title = "Select instance image",
+                Filter = "Image Files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg"
+            };
+
+        DialogResult result = fileDialog.ShowDialog();
+        if (result.HasFlag(DialogResult.OK))
+        {
+            byte[] imageBytes = await File.ReadAllBytesAsync(fileDialog.FileName);
+            ImageBase64 = Convert.ToBase64String(imageBytes);
+        }
+    }
+
+}
