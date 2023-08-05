@@ -1,0 +1,104 @@
+﻿@page "/instances/create"
+@using Chase.Minecraft.Controller;
+@using Chase.Minecraft.Fabric;
+@using Chase.Minecraft.Forge;
+@using Chase.Minecraft.Model;
+@using PolygonMC.Shared.Components
+
+<link href="/css/create-instance.css" rel="stylesheet" />
+<Navigation SelectedPage="0" />
+
+<div id="page-content">
+    <link rel="stylesheet" href="/css/instances.css">
+
+    <div class="col" style="max-height: 96vh;">
+
+        <div class="page-title row center horizontal">
+            <span class="fill">Create Instance</span>
+            <div class="row">
+                <a href="/discover" class="button secondary">Discover More</a>
+                <span>All settings can be changed later</span>
+            </div>
+        </div>
+
+        @if (IsLoading)
+        {
+            <span class="loading"></span>
+        }
+        <div id="create-instance-form" class="col">
+            <div class="row">
+                <ImageInputComponent />
+                <div class="col fill">
+                    <input type="text" id="name-input" name="name-input" placeholder="Instance Name" @bind=Model.Name>
+                    <textarea type="text" id="description-input" name="description-input" placeholder="Instance Description" @bind=Model.Description></textarea>
+                </div>
+            </div>
+            <InteractableListComponent Name="Minecraft Versions" Items=MinecraftVersions OnItemSelect=@(async item=>{SelectedMinecraftVersion=item;await SelectModLoader("fabric");StateHasChanged();}) Categories=MinecraftVersionCategories OnCategorySelect="async item=>{await SelectMinecraftVersionCategory(item);}" SelectedCategory="release" />
+            @if (!string.IsNullOrWhiteSpace(SelectedMinecraftVersion))
+            {
+                <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions Categories=ModLoaders OnCategorySelect="async item=>{await SelectModLoader(item);}" OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory="fabric"  />
+            }
+        </div>
+
+    </div>
+
+    <div class="bottom-nav row alert center horizontal">
+        <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa fa-solid fa-boxes-packing"></i>Overview</div>
+        <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-mortar-pestle"></i>Mods</div>
+        <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
+        <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>Tab=3"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
+        <div class="nav-item" @onclick=Create><i class="fa fa-solid fa-check"></i>Create</div>
+    </div>
+</div>
+
+@code {
+
+    private bool IsLoading { get; set; } = true;
+    private int Tab = 0;
+    private InstanceModel Model { get; set; } = new();
+    private string[] MinecraftVersions { get; set; } = Array.Empty<string>();
+    private string[] ModLoaderVersions { get; set; } = Array.Empty<string>();
+    private string SelectedMinecraftVersion { get; set; } = "";
+    private string SelectedModloaderVersion { get; set; } = "";
+    private string[] ModLoaders { get; set; } = new string[] { "fabric", "forge" };
+    private string[] MinecraftVersionCategories { get; set; } = new string[] { "release", "snapshot" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = false;
+        await SelectMinecraftVersionCategory(MinecraftVersionCategories.First());
+        await base.OnInitializedAsync();
+
+    }
+
+    private void Create()
+    {
+        IsLoading = true;
+        InstanceManager.Create(Model);
+    }
+
+    private async Task SelectMinecraftVersionCategory(string category)
+    {
+
+        MinecraftVersions = (await MinecraftVersionController.GetMinecraftVersionManifestAsync())?.Versions.Where(i => i.Type.Equals(category, StringComparison.OrdinalIgnoreCase)).Select(i => i.ID).ToArray();
+        StateHasChanged();
+    }
+
+    private async Task SelectModLoader(string category)
+    {
+        ModLoaderVersions = Array.Empty<string>();
+        switch (category)
+        {
+            case "fabric":
+                ModLoaderVersions = await FabricLoader.GetLoaderVersions();
+                break;
+            case "forge":
+                if (!string.IsNullOrWhiteSpace(SelectedMinecraftVersion))
+                {
+                    ModLoaderVersions = await ForgeLoader.GetLoaderVersions(SelectedMinecraftVersion);
+                }
+                break;
+        }
+        StateHasChanged();
+    }
+}
