@@ -85,3 +85,8 @@ input[type=search] {
     max-height: calc(100% - 7rem);
     width: 100%;
 }
+
+
+div#source-dropdown {
+    min-width: 8rem;
+}
