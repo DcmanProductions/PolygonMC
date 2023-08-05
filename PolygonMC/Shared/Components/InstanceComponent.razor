@@ -1,14 +1,15 @@
 ﻿@using Chase.Minecraft.Data;
+@using Chase.Minecraft.Model;
 @inject NavigationManager navigation;
 <div class="instance-card col center horizontal" style="--image:url('@BackgroundImage')" @onclick=Open>
 
     @if (IsInstalled)
     {
-        <button class="big">play</button>
+        <button class="big" @onclick=Play>play</button>
     }
     else
     {
-        <button class="big">install</button>
+        <button class="big" @onclick=Install>install</button>
     }
     <p class="name">@Name</p>
     <div class="instance-data row center vertical">
@@ -23,7 +24,7 @@
 
 @code {
     [Parameter]
-    public string BackgroundImage { get; set; } = "/images/minecraft-bg.png";
+    public string? BackgroundImage { get; set; } = null;
     [Parameter]
     public bool IsInstalled { get; set; }
     [Parameter]
@@ -41,6 +42,13 @@
     [Parameter]
     public PlatformSource Source { get; set; }
 
+    protected override Task OnInitializedAsync()
+    {
+        BackgroundImage ??= "/images/minecraft-bg.png";
+
+        return base.OnInitializedAsync();
+    }
+
     private void Open()
     {
         if (IsInstalled)
@@ -49,7 +57,16 @@
         }
         else
         {
-            navigation.NavigateTo($"/discover/product/{Source.ToString()}/{Id}");
+            navigation.NavigateTo($"/discover/modpack/{Source.ToString()}/{Id}");
         }
+    }
+
+    private void Play()
+    {
+
+    }
+    private void Install()
+    {
+
     }
 }
