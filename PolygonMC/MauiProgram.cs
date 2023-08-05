@@ -8,7 +8,6 @@
 
 using Microsoft.Extensions.Logging;
 using PolygonMC.Data;
-using Serilog;
 using Serilog.Formatting.Json;
 
 namespace PolygonMC;
@@ -17,6 +16,7 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        Configuration.Instance.Load();
         string logsDirectory = Directory.CreateDirectory(Path.Combine(Configuration.Instance.WorkingDirectory, "logs")).FullName;
         string template = @"[PolygonMC] {Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}";
         TimeSpan dumpLogInterval = TimeSpan.FromSeconds(5);
@@ -24,6 +24,7 @@ public static class MauiProgram
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Verbose()
             .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose, outputTemplate: template)
+            .WriteTo.Debug(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose, outputTemplate: template)
             .WriteTo.File(Path.Combine(logsDirectory, "debug.log"), restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose, outputTemplate: template, rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 15_000_000, buffered: true, flushToDiskInterval: dumpLogInterval)
             .WriteTo.File(Path.Combine(logsDirectory, "latest.log"), restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, outputTemplate: template, rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 15_000_000, buffered: true, flushToDiskInterval: dumpLogInterval)
             .WriteTo.File(Path.Combine(logsDirectory, "error.log"), restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error, outputTemplate: template, rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 15_000_000, buffered: true, flushToDiskInterval: dumpLogInterval)
