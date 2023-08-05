@@ -66,6 +66,9 @@ hr {
     width: 100%;
 }
 
+a.button{
+    text-decoration:none;
+}
 button, .button {
     font-family: "Poppins";
     text-transform: uppercase;
@@ -201,7 +204,7 @@ a {
         transform: translate(-50%, 200%);
     }
 
-input[type=text], input[type=email], input[type=password], input[type=number], input[type=search], input[type=url] {
+input[type=text], input[type=email], input[type=password], input[type=number], input[type=search], input[type=url], textarea {
     background-color: hsl(0, 0%, 15%);
     color: white;
     padding: 2rem;
@@ -210,7 +213,7 @@ input[type=text], input[type=email], input[type=password], input[type=number], i
     font-size: 1rem;
 }
 
-input:focus {
+input:focus, textarea:focus {
     outline: none;
     border: 1px solid var(--primary);
 }
@@ -358,3 +361,32 @@ input:focus {
 .popup h2 {
     font-size: 2rem;
 }
+
+
+
+.list-body {
+    box-shadow: 0 0 20px 0 rgba(0,0,0,0.5) inset;
+    overflow-y: scroll;
+    height: 400px;
+    padding: 1rem;
+}
+
+.list-item:hover {
+    cursor: pointer;
+    background: rgba(0,0,0,0.5);
+    opacity: 1;
+}
+
+.list-item {
+    padding: 1rem;
+    opacity: .75;
+    transition: opacity, background;
+    transition-duration: 100ms;
+}
+
+    .list-item.selected {
+        background: var(--primary);
+        color: var(--background);
+        opacity: 1;
+        font-weight: 600;
+    }
