@@ -1,0 +1,67 @@
+﻿@using System.Windows.Forms;
+@using System.Text;
+@using PolygonMC.Data;
+
+<label for="">@Title</label>
+<div class="row">
+    <input name="@Title.Replace(' ', '-').ToLower()" type="text" readonly value="@DefaultPath" class="fill">
+    <button class="button" @onclick=OpenFileSystem style="height: 100%;padding: 0;margin: 0;width: 100px;">
+        <i class="fa-solid fa-ellipsis"></i>
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = $"Select File/Directory";
+    [Parameter]
+    public bool IsDirectory { get; set; } = false;
+    [Parameter]
+    public string DefaultPath { get; set; } = Configuration.Instance.WorkingDirectory;
+    [Parameter]
+    public string Filters { get; set; } = "*";
+    [Parameter]
+    public Action<string> OnItemSelected { get; set; } = item => { };
+
+    private void OpenFileSystem()
+    {
+
+        if (IsDirectory)
+        {
+            using FolderBrowserDialog dialog = new()
+                {
+                    Description = $"Select {Title}",
+                    InitialDirectory = DefaultPath,
+                    AutoUpgradeEnabled = true,
+                    OkRequiresInteraction = true,
+                    ShowNewFolderButton = true,
+                    UseDescriptionForTitle = true,
+                };
+            DialogResult result = dialog.ShowDialog();
+            if (result.HasFlag(DialogResult.OK))
+            {
+                DefaultPath = dialog.SelectedPath;
+                OnItemSelected.Invoke(dialog.SelectedPath);
+            }
+        }
+        else
+        {
+            using OpenFileDialog fileDialog = new OpenFileDialog
+                {
+                    Title = $"Select {Title}",
+                    Filter = Filters,
+                    InitialDirectory = Directory.GetParent(DefaultPath).FullName,
+                    Multiselect = false,
+                    RestoreDirectory = true,
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                };
+
+            DialogResult result = fileDialog.ShowDialog();
+            if (result.HasFlag(DialogResult.OK))
+            {
+                DefaultPath = fileDialog.FileName;
+                OnItemSelected.Invoke(fileDialog.FileName);
+            }
+        }
+    }
+}
