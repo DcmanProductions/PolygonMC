@@ -1,5 +1,4 @@
 ﻿@using PolygonMC.Data;
-@inject NavigationManager navigation;
 <link rel="stylesheet" href="/css/nav.css">
 
 <nav class="col @(IsNavigationOpen?"open":"")">
@@ -24,18 +23,18 @@
 
     void ChangePageToInstances()
     {
-        navigation.NavigateTo("/instances");
+        nav.NavigateTo("/instances");
     }
     void ChangePageToDiscover()
     {
-        navigation.NavigateTo("/discover");
+        nav.NavigateTo("/discover");
     }
     void ChangePageToAccounts()
     {
         File.Delete(MSAFile);
         Configuration.Instance.Username = "";
         Configuration.Instance.Save();
-        navigation.NavigateTo("/");
+        nav.NavigateTo("/");
 
     }
     void ChangePageToSettings()

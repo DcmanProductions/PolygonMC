@@ -1,6 +1,5 @@
 ﻿@using Chase.Minecraft.Data;
 @using Chase.Minecraft.Model;
-@inject NavigationManager navigation;
 <div class="instance-card col center horizontal" style="--image:url('@BackgroundImage')" @onclick=Open>
 
     @if (IsInstalled)
@@ -57,7 +56,7 @@
         }
         else
         {
-            navigation.NavigateTo($"/discover/modpack/{Source.ToString()}/{Id}");
+            nav.NavigateTo($"/discover/modpack/{Source.ToString()}/{Id}");
         }
     }
 

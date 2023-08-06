@@ -1,6 +1,5 @@
 ﻿@page "/login/offline"
 @using PolygonMC.Data;
-@inject NavigationManager Navigation;
 <link rel="stylesheet" href="/css/welcome.css">
 
 <div class="col center horizontal vertical" id="minecraft-login">
@@ -27,7 +26,7 @@
             if (!string.IsNullOrWhiteSpace(username))
             {
                 Configuration.Instance.Username = username;
-                Navigation.NavigateTo("/instances");
+                nav.NavigateTo("/instances");
             }
         }
     }
