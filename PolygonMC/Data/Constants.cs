@@ -24,4 +24,5 @@ public static class Constants
     public static InstanceManager InstanceManager { get; } = new(Path.Combine(Configuration.Instance.WorkingDirectory, "instances"));
     public static bool IsAuthenticated { get; set; } = false;
     public static string AuthenticationToken { get; set; } = "";
+    public static string JavaDirectory => Path.Combine(Configuration.Instance.WorkingDirectory, "java");
 }
