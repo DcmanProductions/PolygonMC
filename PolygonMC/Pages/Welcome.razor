@@ -1,0 +1,63 @@
+﻿@page "/welcome"
+@using Chase.Minecraft.Authentication;
+@using Chase.Minecraft.Model;
+@using PolygonMC.Data;
+@using PolygonMC.Shared.Components;
+
+@if (IsLoggingInExternally)
+{
+    <LoadingComponent Title="Continue in browser..." Message="A browser window should have open with a prompt to login."></LoadingComponent>
+}
+@if (IsLoading)
+{
+    <LoadingComponent Title="Loading..."></LoadingComponent>
+}
+
+<link rel="stylesheet" href="/css/welcome.css">
+
+<div class="col center horizontal vertical" id="minecraft-login">
+    <img id="minecraft-logo" src="\images\minecraft-logo.svg" alt="">
+
+    <div class="buttons center horizontal vertical col">
+        <button id="microsoft-login" class="primary button fill big" @onclick="Login">microsoft login</button>
+        <button id="offline-login" class="primary button fill big" @onclick="LoginOffline">offline</button>
+    </div>
+    <a href="https://minecraft.net" class="external" title="Go to Minecraft's website'">Create a new Minecraft account</a>
+</div>
+
+<Alert Message="This software is a not associated with Mojang or Microsoft"></Alert>
+
+@code {
+    private bool IsLoggingInExternally { get; set; }
+    private bool IsLoading { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private Task Login()
+    {
+        IsLoggingInExternally = true;
+        StateHasChanged();
+        return Task.Run(async () =>
+        {
+            string? token = await MicrosoftAuthentication.GetMinecraftBearerAccessToken(MinecraftClientID, MicrosoftRedirectURI, MSAFile, html: File.ReadAllText(Path.Combine(ApplicationDirectory, "wwwroot", "successfully-logged-in.html")));
+            AuthenticationToken = token;
+            UserProfile? user = await MicrosoftAuthentication.GetUserProfile(token);
+            if (user != null)
+            {
+                Configuration.Instance.Profile = (UserProfile)user;
+                Configuration.Instance.Username = user.Value.Name;
+            }
+            Configuration.Instance.Save();
+            IsLoggingInExternally = false;
+            nav.NavigateTo("/instances");
+        });
+    }
+
+    private void LoginOffline()
+    {
+        nav.NavigateTo("/login/offline");
+    }
+}
