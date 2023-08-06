@@ -1,0 +1,122 @@
+﻿@page "/setup"
+@using Chase.Minecraft.Controller;
+@using PolygonMC.Data;
+<link href="/css/setup.css" rel="stylesheet" />
+@if (IsInstallingJava)
+{
+    <LoadingComponent Title="Installing Java..." Message="This might take a moment.  Please don't close the program!" />
+}
+@if (IsLoading)
+{
+    <LoadingComponent Title="Loading..." />
+}
+
+<div id="landing" class="col center horizontal vertical">
+    @switch (Tab)
+    {
+        default:
+        case 0:
+            <img id="banner-image" src="/images/banner-logo.svg" alt="PolygonMC Logo">
+            <p id="landing-subtitle" class="subtitle">For a better Minecrafting expirence!</p>
+            <div id="landing-cta" class="row">
+                <button class="button primary fill" @onclick="()=>Tab=1">Next</button>
+                <a href="https://github.com/dcmanproductions/PolygonMC" class="button secondary fill">Source Code</a>
+            </div>
+            break;
+        case 1:
+            <div class="col" style="width: 70%;">
+                <h1>Directories</h1>
+                <FileInputComponent IsDirectory=true Title="Install Directory" DefaultPath=@Configuration.Instance.WorkingDirectory OnItemSelected=@(path=>Configuration.Instance.WorkingDirectory=path) />
+            </div>
+            break;
+        case 2:
+            <div class="col" style="width: 70%;">
+                <h1>Java Settings</h1>
+                <label for="min-ram">Minimum RAM (MB):</label>
+                <input type="number" id="min-ram" @bind=Configuration.Instance.RAM.MinimumRamMB>
+                <label for="max-ram">Maximum RAM (MB):</label>
+                <input type="number" id="max-ram" @bind=Configuration.Instance.RAM.MaximumRamMB>
+                @if (!Configuration.Instance.HasDownloadedJava)
+                {
+                    <button class="button" @onclick=InstallJava>Install Java</button>
+                }
+            </div>
+            break;
+        case 3:
+
+            <div class="col" style="width: 70%">
+                <h1>Platforms</h1>
+                <h4>This is only needed if you plan to develop modpacks and upload.</h4>
+                <label for="curseforge-api-key">Curseforge API Key:</label>
+                <input type="text" id="curseforge-api-key" @bind=Configuration.Instance.CurseForgeAPI>
+                <label for="modrinth-api-key">Modrinth API Key:</label>
+                <input type="text" id="modrinth-api-key" @bind=Configuration.Instance.ModrinthAPI>
+            </div>
+            break;
+        case 4:
+            <div class="col" style="width: 70%; max-height: 100%">
+                <h1>Finalize</h1>
+                <div class="list-body">
+                    <TOS />
+                </div>
+                <div class="row center vertical">
+                    <button class="button" @onclick=FinalizeSetup>Accept &amp; and Finalize</button>
+                    <a href="https://polygonmc.lfinteractive.net/legal/privacy.html" class="button secondary">Privacy Policy</a>
+                </div>
+            </div>
+            break;
+    }
+</div>
+
+
+<div class="bottom-nav row alert center horizontal">
+    <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa fa-solid fa-house"></i>Welcome</div>
+    <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-folder-tree"></i>Directories</div>
+    <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa fa-brands fa-java"></i>Java</div>
+    <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>Tab=3"><i class="fa fa-solid fa-rocket"></i>Platforms</div>
+    @if (CanFinalize)
+    {
+        <div class="nav-item @(Tab == 4 ?"selected":"")" @onclick="()=>Tab=4"><i class="fa fa-solid fa-check-circle"></i>Finalize</div>
+    }
+</div>
+@code {
+    public int Tab { get; set; } = 0;
+    private bool IsInstallingJava { get; set; } = false;
+    private bool IsLoading { get; set; } = false;
+    private bool CanFinalize => Configuration.Instance.HasDownloadedJava;
+    private string JavaLatestText = "";
+    private string JavaLegacyText = "";
+
+    private async Task InstallJava()
+    {
+        if (!Configuration.Instance.HasDownloadedJava)
+        {
+            IsInstallingJava = true;
+
+            await Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await JavaController.DownloadJava(JavaDirectory, force: true);
+                        }
+                        catch
+                        {
+
+                        }
+                    });
+            Configuration.Instance.HasDownloadedJava = true;
+            IsInstallingJava = false;
+        }
+    }
+
+    private void FinalizeSetup()
+    {
+        if (CanFinalize)
+        {
+            IsLoading = true;
+            Configuration.Instance.HasSetup = true;
+            Configuration.Instance.Save();
+            nav.NavigateTo("/welcome");
+        }
+    }
+}
