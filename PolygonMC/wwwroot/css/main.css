@@ -66,9 +66,6 @@ hr {
     width: 100%;
 }
 
-a.button{
-    text-decoration:none;
-}
 button, .button {
     font-family: "Poppins";
     text-transform: uppercase;
@@ -147,6 +144,8 @@ a {
     color: white;
     text-shadow: none;
     position: relative;
+    text-decoration: none;
+    color: var(--primary);
 }
 
     a.external::before {
@@ -211,6 +210,12 @@ input[type=text], input[type=email], input[type=password], input[type=number], i
     border: 1px solid transparent;
     font-family: "Poppins";
     font-size: 1rem;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 input:focus, textarea:focus {
@@ -362,8 +367,6 @@ input:focus, textarea:focus {
     font-size: 2rem;
 }
 
-
-
 .list-body {
     box-shadow: 0 0 20px 0 rgba(0,0,0,0.5) inset;
     overflow-y: scroll;
@@ -390,3 +393,14 @@ input:focus, textarea:focus {
         opacity: 1;
         font-weight: 600;
     }
+
+details {
+    background: rgba(0,0,0,.2);
+}
+
+summary {
+    font-size: 2rem;
+    padding: 1rem;
+    background: rgba(0,0,0,.2);
+    cursor: pointer;
+}
