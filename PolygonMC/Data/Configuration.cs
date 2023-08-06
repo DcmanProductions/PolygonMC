@@ -21,22 +21,40 @@ internal sealed class Configuration
     [JsonIgnore]
     private readonly string configFile;
 
+    [JsonProperty("setup")]
+    public bool HasSetup { get; set; } = false;
+
     [JsonProperty("directory")]
-    public string WorkingDirectory { get; set; }
+    public string WorkingDirectory { get; set; } = Directory.GetParent(Assembly.GetExecutingAssembly().Location ?? "").FullName;
 
     [JsonProperty("username")]
-    public string Username { get; set; }
+    public string Username { get; set; } = "";
 
     [JsonProperty("profile")]
-    public UserProfile Profile { get; set; }
+    public UserProfile Profile { get; set; } = new();
+
+    [JsonProperty("curseforge-api")]
+    public string CurseForgeAPI { get; set; } = "";
+
+    [JsonProperty("modrinth-api")]
+    public string ModrinthAPI { get; set; } = "";
+
+    [JsonProperty("has-downloaded-java")]
+    public bool HasDownloadedJava { get; set; } = false;
+
+    [JsonProperty("window-width")]
+    public int WindowWidth { get; set; } = 800;
+
+    [JsonProperty("window-height")]
+    public int WindowHeight { get; set; } = 480;
+
+    [JsonProperty("ram")]
+    public RAMInfo RAM { get; set;} = new RAMInfo();
 
     private Configuration()
     {
         Instance = this;
-        WorkingDirectory = Directory.GetParent(Assembly.GetExecutingAssembly().Location ?? "").FullName;
-        Username = "";
-        Profile = new UserProfile();
-        configFile = Path.Combine(WorkingDirectory, "settings.json");
+        configFile = Path.Combine(ApplicationDirectory, "settings.json");
     }
 
     public void Load()
@@ -45,11 +63,40 @@ internal sealed class Configuration
         {
             Save();
         }
-        Instance = JObject.Parse(File.OpenText(configFile).ReadToEnd())?.ToObject<Configuration>() ?? Instance;
+        try
+        {
+            Instance = JObject.Parse(File.OpenText(configFile).ReadToEnd())?.ToObject<Configuration>() ?? Instance;
+        }
+        catch (Exception e)
+        {
+            Log.Error("Unable to load config", e);
+        }
     }
 
-    public void Save()
+    public void Save(int attmpt = 0)
     {
-        File.WriteAllText(configFile, JsonConvert.SerializeObject(this));
+        try
+        {
+            using FileStream fs = new(configFile, FileMode.Create, FileAccess.Write, FileShare.Read);
+            using StreamWriter writer = new(fs);
+            writer.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
+        }
+        catch (Exception e)
+        {
+            Log.Error("Unable to save config", e);
+            try
+            {
+                File.Delete(configFile);
+                if(attmpt < 10)
+                {
+                    Thread.Sleep(100);
+                    Save(attmpt+1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Unable to delete config file.", ex);
+            }
+        }
     }
 }
