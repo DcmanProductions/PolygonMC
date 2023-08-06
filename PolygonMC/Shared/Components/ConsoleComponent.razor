@@ -1,0 +1,27 @@
+﻿<h3>@Name</h3>
+<textarea>
+    @consoleText
+</textarea>
+
+@code {
+    [Parameter]
+    public string Name { get; set; } = "Console";
+
+    private string consoleText { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Task.Run(() =>
+        {
+            using StreamReader stream = new(Console.OpenStandardOutput());
+            string line;
+            while ((line = stream.ReadLine()) != null)
+            {
+                consoleText += line;
+            }
+        });
+
+        await base.OnInitializedAsync();
+    }
+
+}
