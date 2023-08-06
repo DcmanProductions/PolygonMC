@@ -67,6 +67,8 @@ textarea {
     padding: 0;
     position: relative;
     width: 450px;
+    bottom: 0;
+    transform: translate(-50%, -140%);
 }
 
     .list-category .nav-item {
