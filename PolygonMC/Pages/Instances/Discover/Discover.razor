@@ -29,11 +29,11 @@
                 <div id="limit-dropdown" class="dropdown" tabindex="0">
                     <div class="value">@ItemsPerPage</div>
                     <div class="dropdown-items">
-                        <div class="dropdown-item @(ItemsPerPage==10?"selected":"")" @onclick="() => SetItemsPerPage(10)">10</div>
-                        <div class="dropdown-item @(ItemsPerPage==25?"selected":"")" @onclick="() => SetItemsPerPage(25)">25</div>
-                        <div class="dropdown-item @(ItemsPerPage==30?"selected":"")" @onclick="() => SetItemsPerPage(30)">30</div>
-                        <div class="dropdown-item @(ItemsPerPage==50?"selected":"")" @onclick="() => SetItemsPerPage(50)">50</div>
-                        <div class="dropdown-item @(ItemsPerPage==100?"selected":"")" @onclick="() => SetItemsPerPage(100)">100</div>
+                        <div class="dropdown-item @(ItemsPerPage==10?"selected":"")" @onclick="() => ItemsPerPage=10">10</div>
+                        <div class="dropdown-item @(ItemsPerPage==25?"selected":"")" @onclick="() => ItemsPerPage=25">25</div>
+                        <div class="dropdown-item @(ItemsPerPage==30?"selected":"")" @onclick="() => ItemsPerPage=30">30</div>
+                        <div class="dropdown-item @(ItemsPerPage==50?"selected":"")" @onclick="() => ItemsPerPage=50">50</div>
+                        <div class="dropdown-item @(ItemsPerPage==100?"selected":"")" @onclick="() => ItemsPerPage=100">100</div>
                     </div>
                 </div>
                 <button class="secondary fa fa-sliders" @onclick="()=>IsFilterPopupOpen=true"></button>
@@ -86,15 +86,9 @@
     private ModpackFiltersModel Filter { get; set; } = new();
 
 
-    private EventCallback SetItemsPerPage(int items)
-    {
-        ItemsPerPage = items;
-        return new EventCallback();
-    }
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         Tab = 0;
-        SetItemsPerPage(10);
     }
 }
