@@ -1,0 +1,41 @@
+/*
+    PolygonMC - LFInteractive LLC. 2021-2024
+    PolygonMC is a free and open source Minecraft Launcher implementing various modloaders, mod platforms, and minecraft authentication.
+    PolygonMC is protected under GNU GENERAL PUBLIC LICENSE version 3.0 License
+    https://www.gnu.org/licenses/gpl-3.0.en.html#license-text
+    https://github.com/DcmanProductions/PolygonMC
+*/
+
+:root {
+    /*   Primary Colors    */
+    --primary: hsl(149, 100%, 41%);
+    --primary-lighter: hsl(149, 100%, 51%);
+    --primary-darker: hsl(149, 100%, 31%);
+    --primary-darkest: hsl(149, 100%, 25%);
+    /*   Secondary Colors   */
+    --secondary: hsl(0, 0%, 36%);
+    --secondary-lighter: hsl(0, 0%, 76%);
+    --secondary-darker: hsl(0, 0%, 26%);
+    --secondary-darkest: hsl(0, 0%, 16%);
+    /*   Primary Foreground Colors   */
+    --primary-foreground: hsl(149, 100%, 0%);
+    --primary-foreground-lighter: hsl(149, 0%, 100%);
+    --primary-foreground-darker: hsl(149, 0%, 80%);
+    --primary-foreground-darkest: hsl(149, 0%, 70%);
+    /*   Secondary Foreground Colors   */
+    --secondary-foreground: hsl(0, 0%, 35%);
+    --secondary-foreground-lighter: hsl(0, 0%, 45%);
+    --secondary-foreground-darker: hsl(0, 0%, 26%);
+    --secondary-foreground-darkest: hsl(0, 0%, 12%);
+    /*   Primary Foreground Colors   */
+    --primary-button-foreground: hsl(149, 0%, 7%);
+    --primary-button-foreground-hover: hsl(149, 0%, 7%);
+    /*   Secondary Foreground Colors   */
+    --secondary-button-foreground: hsl(0, 0%, 100%);
+    --secondary-button-foreground-hover: hsl(149, 0%, 85%);
+    /*   Background Colors   */
+    --background: hsl(0, 0%, 0%);
+    --background-lighter: hsl(0, 0%, 4%);
+    --background-darker: hsl(0, 0%, 0%);
+    --background-darkest: hsl(0, 0%, 0%);
+}
