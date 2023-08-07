@@ -6,6 +6,7 @@
     https://github.com/DcmanProductions/PolygonMC
 */
 
+using Chase.Minecraft.Controller;
 using Microsoft.Extensions.Logging;
 using PolygonMC.Data;
 using Serilog.Formatting.Json;
@@ -32,6 +33,21 @@ public static class MauiProgram
             .CreateLogger();
 
         Log.Debug("Starting PolygonMC");
+
+        Task.Run(() =>
+        {
+            if (Configuration.Instance.Profile.Skins != null || !Configuration.Instance.Profile.Skins.Any() || Configuration.Instance.Profile.Skins.First().Url != null)
+            {
+                try
+                {
+                    UserProfileController.GetFace(Configuration.Instance.Profile, true);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Unable to get user face from texture: {PROFILE}", Configuration.Instance.Profile, ex);
+                }
+            }
+        }).Wait();
 
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder.UseMauiApp<App>();
