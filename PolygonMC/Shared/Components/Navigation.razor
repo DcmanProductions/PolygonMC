@@ -1,15 +1,26 @@
-﻿@using PolygonMC.Data;
+﻿@using Chase.Minecraft.Controller;
+@using PolygonMC.Data;
 <link rel="stylesheet" href="/css/nav.css">
 
 <nav class="col @(IsNavigationOpen?"open":"")">
     <div id="nav-items" class="col center horizontal">
         <div id="nav-expand" class="nav-item" @onclick="()=>IsNavigationOpen=!IsNavigationOpen"> <i class="fa fa-chevron-right"></i> <span>Close</span> </div>
-        <div class="nav-item @(SelectedPage == 0 ?"selected":"")" @onclick=ChangePageToInstances> <i class="fa fa-bookmark"></i> <span>Instances</span> </div>
-        <div class="nav-item @(SelectedPage == 1 ?"selected":"")" @onclick=ChangePageToDiscover> <i class="fa fa-compass"></i> <span>Discover</span> </div>
+        <div class="nav-item @(SelectedPage == 0 ?"selected":"")" @onclick=@(()=>nav.NavigateTo("/instances"))> <i class="fa fa-bookmark"></i> <span>Instances</span> </div>
+        <div class="nav-item @(SelectedPage == 1 ?"selected":"")" @onclick=@(()=>nav.NavigateTo("/discover"))> <i class="fa fa-compass"></i> <span>Discover</span> </div>
     </div>
     <div id="extra-items" class="col center horizontal">
-        <div class="nav-item @(SelectedPage == 2 ?"selected":"")" @onclick=ChangePageToAccounts> <i class="fa fa-bookmark"></i> <span>@Configuration.Instance.Username</span> </div>
-        <div class="nav-item @(SelectedPage == 3 ?"selected":"")" @onclick=ChangePageToSettings> <i class="fa fa-gear"></i> <span>Settings</span> </div>
+        <div class="nav-item @(SelectedPage == 2 ?"selected":"")" @onclick=@(()=>nav.NavigateTo("/settings/4"))>
+            @if (IsAuthenticated)
+            {
+                <i class="nav-icon" style="background-image: url('data:image/png;base64,@UserProfileController.GetFaceBase64(Configuration.Instance.Profile)')"></i>
+            }
+            else
+            {
+                <i class="fa fa-user"></i>
+            }
+            <span>@Configuration.Instance.Username</span>
+        </div>
+        <div class="nav-item @(SelectedPage == 3 ?"selected":"")" @onclick=@(()=>nav.NavigateTo("/settings"))> <i class="fa fa-gear"></i> <span>Settings</span> </div>
     </div>
 </nav>
 
@@ -19,25 +30,4 @@
 
     [Parameter]
     public int SelectedPage { get; set; }
-
-
-    void ChangePageToInstances()
-    {
-        nav.NavigateTo("/instances");
-    }
-    void ChangePageToDiscover()
-    {
-        nav.NavigateTo("/discover");
-    }
-    void ChangePageToAccounts()
-    {
-        File.Delete(MSAFile);
-        Configuration.Instance.Username = "";
-        Configuration.Instance.Save();
-        nav.NavigateTo("/");
-
-    }
-    void ChangePageToSettings()
-    {
-    }
 }
