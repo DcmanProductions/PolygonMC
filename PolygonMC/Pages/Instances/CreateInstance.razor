@@ -1,9 +1,13 @@
 ﻿@page "/instances/create"
 @using Chase.Minecraft.Controller;
+@using Chase.Minecraft.Data;
 @using Chase.Minecraft.Fabric;
 @using Chase.Minecraft.Forge;
 @using Chase.Minecraft.Model;
 @using Chase.Minecraft;
+@using Chase.Minecraft.Modrinth.Controller;
+@using Chase.Minecraft.Modrinth.Model;
+@using Chase.Minecraft.Modrinth;
 @using PolygonMC.Data;
 @using PolygonMC.Shared.Components
 
@@ -84,13 +88,59 @@
                     </details>
                 </div>
                 break;
+            case 1:
+                <div class="col">
+                    <div class="row">
+                        <h2 class="fill">Mods</h2>
+                        <div id="source-dropdown" class="dropdown" tabindex="0">
+                            <div class="value">@Source</div>
+                            <div class="dropdown-items">
+                                @foreach (PlatformSource source in Enum.GetValues(typeof(PlatformSource)))
+                                {
+                                    @if (source != PlatformSource.Unknown)
+                                    {
+                                        <div class="dropdown-item @(Source==source?"selected":"")" @onclick="() => Source=source">@source</div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div id="limit-dropdown" class="dropdown" tabindex="0">
+                            <div class="value">@ItemsPerPage</div>
+                            <div class="dropdown-items">
+                                <div class="dropdown-item @(ItemsPerPage==10?"selected":"")" @onclick="() => ItemsPerPage=10">10</div>
+                                <div class="dropdown-item @(ItemsPerPage==25?"selected":"")" @onclick="() => ItemsPerPage=25">25</div>
+                                <div class="dropdown-item @(ItemsPerPage==30?"selected":"")" @onclick="() => ItemsPerPage=30">30</div>
+                                <div class="dropdown-item @(ItemsPerPage==50?"selected":"")" @onclick="() => ItemsPerPage=50">50</div>
+                                <div class="dropdown-item @(ItemsPerPage==100?"selected":"")" @onclick="() => ItemsPerPage=100">100</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col fill">
+                        @if (Source == PlatformSource.Modrinth)
+                        {
+                            foreach (ModrinthSearchResultItem resource in ModrinthSearchResult)
+                            {
+                                <ResourceItemComponent Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.IconUrl Background=@resource.FeaturedGallery IsDownloaded />
+                            }
+                        }
+                    </div>
+                </div>
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
         }
 
     </div>
-
     <div class="bottom-nav row alert center horizontal">
         <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa fa-solid fa-sliders"></i>Settings</div>
-        <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-mortar-pestle"></i>Mods</div>
+        @if (!string.IsNullOrWhiteSpace(SelectedModloaderVersion))
+        {
+            <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-mortar-pestle"></i>Mods</div>
+        }
         <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
         <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>Tab=3"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
         <div class="nav-item @(Tab == 4 ?"selected":"")" @onclick="()=>Tab=4"><i class="fa fa-solid fa-check-circle"></i>Finalize</div>
@@ -99,8 +149,8 @@
 
 @code {
 
-    private bool IsLoading { get; set; } = true;
     private int Tab = 0;
+    private bool IsLoading { get; set; } = true;
     private InstanceModel Model { get; set; } = new();
     private string[] MinecraftVersions { get; set; } = Array.Empty<string>();
     private string[] ModLoaderVersions { get; set; } = Array.Empty<string>();
@@ -112,6 +162,11 @@
     private string SelectedModloaderVersionCategory { get; set; } = "forge";
     private string JavaArguments = "";
     private string MinecraftArguments = "";
+    private ResourceItemComponent[] Mods { get; set; } = Array.Empty<ResourceItemComponent>();
+    private PlatformSource Source { get; set; } = Configuration.Instance.DefaultPlatform;
+    private int ItemsPerPage { get; set; } = 10;
+    private string SearchQuery { get; set; } = "";
+    ModrinthSearchResultItem[] ModrinthSearchResult { get; set; } = Array.Empty<ModrinthSearchResultItem>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -178,4 +233,56 @@
         }
         StateHasChanged();
     }
+
+    private async Task LoadMods()
+    {
+        await Task.Run(async () =>
+        {
+            if (Source == PlatformSource.Modrinth)
+            {
+                if (SelectedMinecraftVersionCategory == "release")
+                {
+                    Version version = Version.Parse(SelectedMinecraftVersion);
+                    ModLoaders loader = (ModLoaders)Enum.Parse(typeof(ModLoaders), SelectedModloaderVersionCategory);
+                    MinecraftVersionManifest? manifest = await MinecraftVersionController.GetMinecraftVersionManifestAsync();
+                    string[] versions = manifest.Value.Versions.Select(i => i.ID).Where(i =>
+                                    {
+                                        if (Version.TryParse(i, out Version v))
+                                        {
+                                            return v.Major == version.Major && v.Minor == version.Minor;
+                                        }
+                                        return false;
+                                    }).ToArray();
+
+                    using ModrinthClient client = new();
+                    FacetBuilder facets = new FacetBuilder()
+                    .AddVersions(versions)
+                    .AddModloaders(loader)
+                    .AddProjectTypes(Chase.Minecraft.Modrinth.Data.ModrinthProjectTypes.Mod);
+
+                    ModrinthSearchQuery query = new()
+                        {
+                            Limit = ItemsPerPage,
+                            Facets = facets,
+                            Query = SearchQuery,
+                        };
+                    ModrinthSearchResult? result = await client.SearchAsync(query);
+                    if (result != null && result.HasValue)
+                    {
+                        ModrinthSearchResult = result.Value.Hits;
+                    }
+                }
+            }
+            else if (Source == PlatformSource.Curseforge)
+            {
+
+            }
+        });
+    }
+    private Task AddModrinthMod(string id) => Task.Run(async () =>
+    {
+
+        using ModrinthClient client = new();
+        var versions = await client.GetProjectVersionsAsync(id);
+    });
 }
