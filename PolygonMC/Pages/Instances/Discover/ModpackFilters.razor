@@ -42,11 +42,14 @@
     [Parameter]
     public Action<ModpackFiltersModel> OnChange { get; set; } = a => { };
     [Parameter]
-    public string[] Categories { get; set; }
+    public string[] Categories { get; set; } = Array.Empty<string>();
 
     protected override async Task OnInitializedAsync()
     {
+        await Task.Run(() =>
+        {
+            Categories = new ModrinthClient().GetCategories().Select(i => i.Name).ToArray();
+        });
         await base.OnInitializedAsync();
-        Categories = new ModrinthClient().GetCategories().Select(i => i.Name).ToArray();
     }
 }
