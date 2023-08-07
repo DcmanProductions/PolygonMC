@@ -1,0 +1,28 @@
+﻿@page "/skincanvas"
+@inject IJSRuntime JSRuntime
+
+<canvas class="skin-canvas" @ref="canvasRef"></canvas>
+
+@code {
+    private ElementReference canvasRef;
+
+    private SkinCanvas skinCanvas;
+
+    // Parameter to receive the Base64 encoded Minecraft skin
+    [Parameter]
+    public string Base64 { get; set; }
+
+    private async Task InitializeSkinCanvas()
+    {
+        await JSRuntime.InvokeVoidAsync("initializeSkinCanvas", canvasRef, Base64);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize the SkinCanvas instance once the component is rendered
+            await InitializeSkinCanvas();
+        }
+    }
+}
