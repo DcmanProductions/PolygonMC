@@ -1,0 +1,36 @@
+﻿<div class="row" style="background-image: url('@Background')">
+    <div class="icon" style="background-image: url('@Icon')"></div>
+    <div class="col">
+        <div class="title">@Name</div>
+        <div class="author">by @Author</div>
+        <div class="description">@Description</div>
+    </div>
+    <div class="col">
+        <div class="downloads"><i class="fa fa-download"></i>@FormatNumber(Downloads)</div>
+        @if (IsDownloaded)
+        {
+            <button class="button secondary">Installed</button>
+        }
+        else
+        {
+            <button class="button">Download</button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Icon { get; set; }
+    [Parameter]
+    public string? Background { get; set; } = null;
+    [Parameter]
+    public string Name { get; set; }
+    [Parameter]
+    public string Description { get; set; }
+    [Parameter]
+    public int Downloads { get; set; } = 0;
+    [Parameter]
+    public bool IsDownloaded { get; set; }
+    [Parameter]
+    public string Author { get; set; } = "";
+}
