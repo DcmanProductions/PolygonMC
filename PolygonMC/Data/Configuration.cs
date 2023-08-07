@@ -6,6 +6,7 @@
     https://github.com/DcmanProductions/PolygonMC
 */
 
+using Chase.Minecraft.Data;
 using Chase.Minecraft.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -17,6 +18,9 @@ internal sealed class Configuration
 {
     [JsonIgnore]
     public static Configuration Instance = new();
+
+    [JsonProperty("theme")]
+    public string Theme = "default";
 
     [JsonIgnore]
     private readonly string configFile;
@@ -49,7 +53,13 @@ internal sealed class Configuration
     public int WindowHeight { get; set; } = 480;
 
     [JsonProperty("ram")]
-    public RAMInfo RAM { get; set;} = new RAMInfo();
+    public RAMInfo RAM { get; set; } = new RAMInfo();
+
+    [JsonProperty("default-platform")]
+    public PlatformSource DefaultPlatform { get; set; } = PlatformSource.Modrinth;
+
+    [JsonIgnore]
+    public bool IsAuthenticated { get; set; } = false;
 
     private Configuration()
     {
@@ -87,10 +97,10 @@ internal sealed class Configuration
             try
             {
                 File.Delete(configFile);
-                if(attmpt < 10)
+                if (attmpt < 10)
                 {
                     Thread.Sleep(100);
-                    Save(attmpt+1);
+                    Save(attmpt + 1);
                 }
             }
             catch (Exception ex)
