@@ -1,4 +1,11 @@
-﻿@inherits LayoutComponentBase
+﻿@using PolygonMC.Data;
+@inherits LayoutComponentBase
+
+@if (Configuration.Instance.Theme != "default")
+{
+    <link rel="stylesheet" href="/css/themes/@(Configuration.Instance.Theme).css">
+}
+
 <div class="page">
     <main>
         @Body
