@@ -1,0 +1,36 @@
+﻿@using Chase.Minecraft.Data;
+@using PolygonMC.Data;
+<h1>General Settings</h1>
+<div class="col">
+    <FileInputComponent DefaultPath=@(Configuration.Instance.WorkingDirectory) IsDirectory=true Title="Install Directory" OnItemSelected=@(item=>{Configuration.Instance.WorkingDirectory=item;Configuration.Instance.Save();}) />
+
+    <label for="theme-dropdown">Theme</label>
+    <div id="theme-dropdown" class="dropdown" tabindex="0">
+        <div class="value">@Configuration.Instance.Theme.Replace('-', ' ')</div>
+        <div class="dropdown-items">
+            <div class="dropdown-item @(Configuration.Instance.Theme=="default"?"selected":"")" @onclick=@(() => {Configuration.Instance.Theme="default";Configuration.Instance.Save();StateHasChanged();})>Default</div>
+            @foreach (string theme in Themes)
+            {
+                <div class="dropdown-item @(Configuration.Instance.Theme==theme?"selected":"")" @onclick=@(() => {Configuration.Instance.Theme=theme;Configuration.Instance.Save();StateHasChanged();nav.NavigateTo("/settings");}) style="text-transform: capitalize">@theme.Replace('-', ' ')</div>
+            }
+        </div>
+    </div>
+    <label for="source-dropdown">Default Platform</label>
+    <div id="source-dropdown" class="dropdown" tabindex="0">
+        <div class="value">@Configuration.Instance.DefaultPlatform</div>
+        <div class="dropdown-items">
+            @foreach (PlatformSource source in Enum.GetValues(typeof(PlatformSource)))
+            {
+                @if (source != PlatformSource.Unknown)
+                {
+                    <div class="dropdown-item @(Configuration.Instance.DefaultPlatform==source?"selected":"")" @onclick=@(() => {Configuration.Instance.DefaultPlatform=source;Configuration.Instance.Save();})>@source</div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+
+
+}

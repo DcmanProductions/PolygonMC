@@ -1,0 +1,22 @@
+﻿@using Chase.Minecraft.Controller;
+@using PolygonMC.Data;
+<h1>Account Settings</h1>
+<div class="col">
+    <h2>Logged in as @Configuration.Instance.Username 
+        @if (!IsAuthenticated)
+        {
+            <span>[Offline]</span>
+        }
+    </h2>
+    <button class="button" @onclick=Logout>Logout</button>
+</div>
+
+@code {
+
+
+    public void Logout()
+    {
+        File.Delete(MSAFile);
+        nav.NavigateTo("/welcome");
+    }
+}

@@ -1,0 +1,37 @@
+﻿@page "/settings/{Tab:int?}";
+<Navigation SelectedPage="3" />
+<div id="page-content">
+
+    @switch (Tab)
+    {
+        default:
+        case 0:
+            <GeneralSettings />
+            break;
+        case 1:
+            <MinecraftSettings />
+            break;
+        case 2:
+            <JavaSettings />
+            break;
+        case 3:
+            <PlatformSettings />
+            break;
+        case 4:
+            <AccountSettings />
+            break;
+    }
+
+    <div class="bottom-nav row alert center horizontal">
+        <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa fa-solid fa-gear"></i>General</div>
+        <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-gamepad"></i>Minecraft</div>
+        <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa fa-brands fa-java"></i>Java</div>
+        <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>Tab=3"><i class="fa fa-solid fa-rocket"></i>Platforms</div>
+        <div class="nav-item @(Tab == 4 ?"selected":"")" @onclick="()=>Tab=4"><i class="fa fa-solid fa-user"></i>Account</div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Tab { get; set; } = 0;
+}
