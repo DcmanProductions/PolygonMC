@@ -10,8 +10,38 @@
 @import url('/libraries/fontawesome/css/all.min.css');
 
 :root {
-    --primary: #00D267;
-    --background: #1E1E1E;
+    /*   Primary Colors    */
+    --primary: hsl(149, 100%, 41%);
+    --primary-lighter: hsl(149, 85%, 51%);
+    --primary-darker: hsl(149, 80%, 31%);
+    --primary-darkest: hsl(149, 80%, 25%);
+    /*   Secondary Colors   */
+    --secondary: hsl(0, 0%, 36%);
+    --secondary-lighter: hsl(0, 0%, 76%);
+    --secondary-darker: hsl(0, 0%, 26%);
+    --secondary-darkest: hsl(0, 0%, 16%);
+    /*   Primary Foreground Colors   */
+    --primary-foreground: hsl(149, 0%, 90%);
+    --primary-foreground-lighter: hsl(149, 0%, 100%);
+    --primary-foreground-darker: hsl(149, 0%, 80%);
+    --primary-foreground-darkest: hsl(149, 0%, 70%);
+    /*   Secondary Foreground Colors   */
+    --secondary-foreground: hsl(0, 0%, 35%);
+    --secondary-foreground-lighter: hsl(0, 0%, 45%);
+    --secondary-foreground-darker: hsl(0, 0%, 26%);
+    --secondary-foreground-darkest: hsl(0, 0%, 12%);
+    /*   Primary Foreground Colors   */
+    --primary-button-foreground: hsl(149, 0%, 7%);
+    --primary-button-foreground-hover: hsl(149, 0%, 7%);
+    /*   Secondary Foreground Colors   */
+    --secondary-button-foreground: hsl(0, 0%, 100%);
+    --secondary-button-foreground-hover: hsl(149, 0%, 85%);
+    /*   Background Colors   */
+    --background: hsl(0, 0%, 7%);
+    --background-lighter: hsl(0, 0%, 12%);
+    --background-darker: hsl(0, 0%, 4%);
+    --background-darkest: hsl(0, 0%, 0%);
+    /*   Disables User Selection   */
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
@@ -24,10 +54,10 @@
 }
 
 body {
-    background: #111111;
+    background: var(--background);
     margin: 0;
     font-family: Poppins;
-    color: white;
+    color: var(--primary-foreground-lighter);
 }
 
 :focus {
@@ -63,13 +93,13 @@ hr {
 }
 
 .fill {
-    width: 100%;
+    width: -webkit-fill-available;
 }
 
 button, .button {
     font-family: "Poppins";
     text-transform: uppercase;
-    color: white !important;
+    color: var(--primary-foreground) !important;
     font-size: 1rem;
     text-align: center;
     outline: none;
@@ -81,9 +111,14 @@ button, .button {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #008e46;
+    background-color: var(--primary-darker);
     width: auto;
+    font-weight: 400;
 }
+
+    button:before, .button:before {
+        padding: 0 1rem;
+    }
 
     .button.big, button.big {
         font-family: 'Minecraft Ten';
@@ -107,13 +142,13 @@ button, .button {
         width: calc(100% - 5rem - 20px);
         text-shadow: 0px 2px 0px BLACK;
         aspect-ratio: 11/1;
-        border-top: 5px solid #27ce40;
-        border-bottom: 5px solid #064d2a;
-        border-left: 5px solid #0c6e3d;
-        border-right: 5px solid #0c6e3d;
+        border-top: 5px solid var(--primary-lighter);
+        border-bottom: 5px solid var(--primary-darker);
+        border-left: 5px solid var(--primary-darkest);
+        border-right: 5px solid var(--primary-darkest);
         outline: 5px solid black;
         background-image: none;
-        background-color: #008e46;
+        background-color: var(--primary);
     }
 
     .button.fill, button.fill {
@@ -121,13 +156,14 @@ button, .button {
     }
 
     button.secondary, .button.secondary {
-        background-color: hsl(0, 0%, 26%);
+        color: var(--secondary-foreground);
+        background-color: var(--secondary-darker);
     }
 
     button:hover, .button:hover {
         cursor: pointer;
         background-image: none;
-        background-color: #007439;
+        background-color: var(--primary-darkest);
     }
 
     .button.big:hover, button.big:hover {
@@ -137,7 +173,7 @@ button, .button {
 
     button.secondary:hover, .button.secondary:hover {
         background-image: none;
-        background-color: hsl(0, 0%, 15%);
+        background-color: var(--secondary-darkest);
     }
 
 a {
@@ -169,20 +205,7 @@ a {
     justify-content: center;
     align-items: center;
     text-align: center;
-    background-color: var(--background);
-    box-shadow: 0 2px 0 0 BLACK;
-    left: 50%;
-    transform: translateX(-50%);
-    transition: transform 1s;
-    position: fixed;
-    bottom: 2rem;
-    padding: 2rem 4rem;
-    text-wrap: nowrap;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background-color: var(--background);
+    background-color: var(--background-darker);
     box-shadow: 0 2px 0 0 BLACK;
     left: 50%;
     transform: translateX(-50%);
@@ -262,7 +285,7 @@ input:focus, textarea:focus {
 
 .dropdown {
     position: relative;
-    background-color: hsl(0,0%,26%);
+    background-color: var(--background-lighter);
     padding: 1rem;
     margin: 1rem;
     font-size: 1rem;
@@ -273,7 +296,7 @@ input:focus, textarea:focus {
 
     .dropdown:hover, .dropdown:focus {
         cursor: pointer;
-        background-color: hsl(0,0%,15%);
+        background-color: var(--primary-darkest);
     }
 
         .dropdown:focus .dropdown-items {
@@ -284,7 +307,7 @@ input:focus, textarea:focus {
     .dropdown .dropdown-items {
         display: none;
         position: absolute;
-        background: hsl(0,0%,15%);
+        background: var(--background-darker);
         width: 100%;
         left: 0;
         transform: translateY(1rem);
@@ -296,11 +319,11 @@ input:focus, textarea:focus {
         }
 
             .dropdown .dropdown-items .dropdown-item:hover {
-                background-color: hsl(0,0%,25%);
+                background-color: var(--background-lighter);
             }
 
             .dropdown .dropdown-items .dropdown-item.selected {
-                background-color: hsl(0,0%,10%);
+                background-color: var(--background-lighter);
             }
 
 .checkbox {
@@ -310,7 +333,7 @@ input:focus, textarea:focus {
 }
 
     .checkbox:hover {
-        background-color: hsl(0,0%,5%);
+        background-color: var(--secondary-darkest);
     }
 
     .checkbox .title {
@@ -319,7 +342,7 @@ input:focus, textarea:focus {
     }
 
     .checkbox .checkmark {
-        background-color: hsl(0,0%,15%);
+        background-color: var(--secondary-darker);
         padding: 10px;
         max-width: 2rem;
         max-height: 2rem;
