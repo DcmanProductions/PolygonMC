@@ -8,9 +8,25 @@
 
 global using static PolygonMC.Data.Constants;
 using Chase.Minecraft.Instances;
+using Newtonsoft.Json;
 using System.Reflection;
 
 namespace PolygonMC.Data;
+
+internal enum InstanceSortMethod
+{
+    [JsonProperty("last-played")]
+    LastPlayed,
+
+    [JsonProperty("play-time")]
+    PlayTime,
+
+    [JsonProperty("number-of-plays")]
+    NumberOfPlays,
+
+    [JsonProperty("alphabetically")]
+    Alphabetically,
+}
 
 public static class Constants
 {
@@ -22,7 +38,31 @@ public static class Constants
     public static string MicrosoftRedirectURI { get; } = "http://127.0.0.1:56748";
     public static string MSAFile { get; } = Path.Combine(Configuration.Instance.WorkingDirectory, "msa-auth.json");
     public static InstanceManager InstanceManager { get; } = new(Path.Combine(Configuration.Instance.WorkingDirectory, "instances"));
-    public static bool IsAuthenticated { get; set; } = false;
+    public static bool IsAuthenticated => Configuration.Instance.IsAuthenticated;
     public static string AuthenticationToken { get; set; } = "";
     public static string JavaDirectory => Path.Combine(Configuration.Instance.WorkingDirectory, "java");
+    public static string[] Themes => Directory.GetFiles(Path.Combine(ApplicationDirectory, "wwwroot", "css", "themes"), "*.css", SearchOption.TopDirectoryOnly).Select(i => Path.GetFileName(i).Replace(Path.GetExtension(i), "")).ToArray();
+
+    public static string FormatNumber(byte number) => FormatNumber((int)number);
+
+    public static string FormatNumber(short number) => FormatNumber((int)number);
+
+    public static string FormatNumber(int number) => FormatNumber((double)number);
+
+    public static string FormatNumber(float number) => FormatNumber((double)number);
+
+    public static string FormatNumber(double number)
+    {
+        string[] suffixes = { "", "K", "M", "B", "T" };
+        int magnitude = 0;
+        double value = number;
+
+        while (value >= 1000 && magnitude < suffixes.Length - 1)
+        {
+            magnitude++;
+            value /= 1000;
+        }
+
+        return $"{value:0.##}{suffixes[magnitude]}";
+    }
 }
