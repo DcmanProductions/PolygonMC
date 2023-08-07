@@ -49,6 +49,7 @@
             {
                 Configuration.Instance.Profile = (UserProfile)user;
                 Configuration.Instance.Username = user.Value.Name;
+                Configuration.Instance.IsAuthenticated = true;
             }
             Configuration.Instance.Save();
             IsLoggingInExternally = false;
