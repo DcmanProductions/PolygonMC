@@ -33,9 +33,9 @@
             <div class="col" style="width: 70%;">
                 <h1>Java Settings</h1>
                 <label for="min-ram">Minimum RAM (MB):</label>
-                <input type="number" id="min-ram" @bind=Configuration.Instance.RAM.MinimumRamMB>
+                <input type="number" id="min-ram" @bind=Configuration.Instance.RAM.Minimum>
                 <label for="max-ram">Maximum RAM (MB):</label>
-                <input type="number" id="max-ram" @bind=Configuration.Instance.RAM.MaximumRamMB>
+                <input type="number" id="max-ram" @bind=Configuration.Instance.RAM.Maximum>
                 @if (!Configuration.Instance.HasDownloadedJava)
                 {
                     <button class="button" @onclick=InstallJava>Install Java</button>
