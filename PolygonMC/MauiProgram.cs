@@ -10,6 +10,7 @@ using Chase.Minecraft.Controller;
 using Microsoft.Extensions.Logging;
 using PolygonMC.Data;
 using Serilog.Formatting.Json;
+using System.IO.Pipes;
 
 namespace PolygonMC;
 
@@ -17,8 +18,8 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        Configuration.Instance.Load();
-        string logsDirectory = Directory.CreateDirectory(Path.Combine(Configuration.Instance.WorkingDirectory, "logs")).FullName;
+        ConfigurationController.Instance.Load();
+        string logsDirectory = Directory.CreateDirectory(Path.Combine(ConfigurationController.Instance.WorkingDirectory, "logs")).FullName;
         string template = @"[PolygonMC] {Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}";
         TimeSpan dumpLogInterval = TimeSpan.FromSeconds(5);
 
@@ -32,22 +33,42 @@ public static class MauiProgram
             .WriteTo.File(new JsonFormatter(), Path.Combine(logsDirectory, "error.json"), Serilog.Events.LogEventLevel.Error, fileSizeLimitBytes: 15_000_000, rollingInterval: RollingInterval.Day, buffered: false)
             .CreateLogger();
 
-        Log.Debug("Starting PolygonMC");
+        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        {
+            Log.CloseAndFlush();
+        };
+        Log.Debug("Starting PolygonMC - {ARGS}", string.Join(' ', Environment.GetCommandLineArgs()));
+
+        using (Mutex mutex = new(true, ApplicationName, out bool createNew))
+        {
+            if (createNew)
+            {
+                Thread pipeThread = new(ReceiveArgumentsFromNewInstance)
+                {
+                    IsBackground = true,
+                };
+                pipeThread.Start();
+            }
+            else
+            {
+                SendArgumentsToRunningInstance();
+            }
+        }
 
         Task.Run(() =>
         {
-            if (Configuration.Instance.Profile.Skins != null || !Configuration.Instance.Profile.Skins.Any() || Configuration.Instance.Profile.Skins.First().Url != null)
+            if (ConfigurationController.Instance.Profile.Skins != null || !ConfigurationController.Instance.Profile.Skins.Any() || ConfigurationController.Instance.Profile.Skins.First().Url != null)
             {
                 try
                 {
-                    UserProfileController.GetFace(Configuration.Instance.Profile, true);
+                    UserProfileController.GetFace(ConfigurationController.Instance.Profile, true);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Unable to get user face from texture: {PROFILE}", Configuration.Instance.Profile, ex);
+                    Log.Error("Unable to get user face from texture: {PROFILE}", ConfigurationController.Instance.Profile, ex);
                 }
             }
-        }).Wait();
+        });
 
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder.UseMauiApp<App>();
@@ -60,11 +81,47 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
-        {
-            Log.CloseAndFlush();
-        };
-
         return builder.Build();
+    }
+
+    private static void SendArgumentsToRunningInstance()
+    {
+        try
+        {
+            using NamedPipeClientStream pipeClient = new(".", ApplicationName, PipeDirection.Out);
+            pipeClient.Connect(TimeSpan.FromSeconds(30));
+            using StreamWriter writer = new(pipeClient);
+            foreach (string arg in Environment.GetCommandLineArgs())
+            {
+                writer.WriteLine(arg);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error("Unable to send arguments to running instance", e);
+        }
+    }
+
+    private static void ReceiveArgumentsFromNewInstance()
+    {
+        using NamedPipeServerStream pipeServer = new(ApplicationName, PipeDirection.In);
+        while (true)
+        {
+            try
+            {
+                //var connectionHandle = pipeServer.BeginWaitForConnection(null, null);
+
+                //pipeServer.EndWaitForConnection(connectionHandle);
+                pipeServer.WaitForConnection();
+                using StreamReader reader = new(pipeServer);
+                string args = reader.ReadLine();
+                Log.Information(args);
+                pipeServer.Disconnect();
+            }
+            catch (Exception e)
+            {
+                Log.Error("Unable to receive arguments to running instance", e);
+            }
+        }
     }
 }

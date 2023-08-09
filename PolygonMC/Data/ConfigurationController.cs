@@ -14,10 +14,10 @@ using System.Reflection;
 
 namespace PolygonMC.Data;
 
-internal sealed class Configuration
+internal sealed class ConfigurationController
 {
     [JsonIgnore]
-    public static Configuration Instance = new();
+    public static ConfigurationController Instance = new();
 
     [JsonProperty("theme")]
     public string Theme = "default";
@@ -61,7 +61,7 @@ internal sealed class Configuration
     [JsonIgnore]
     public bool IsAuthenticated { get; set; } = false;
 
-    private Configuration()
+    private ConfigurationController()
     {
         Instance = this;
         configFile = Path.Combine(ApplicationDirectory, "settings.json");
@@ -75,7 +75,7 @@ internal sealed class Configuration
         }
         try
         {
-            Instance = JObject.Parse(File.OpenText(configFile).ReadToEnd())?.ToObject<Configuration>() ?? Instance;
+            Instance = JObject.Parse(File.OpenText(configFile).ReadToEnd())?.ToObject<ConfigurationController>() ?? Instance;
         }
         catch (Exception e)
         {

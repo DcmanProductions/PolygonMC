@@ -6,7 +6,7 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        if (!Configuration.Instance.HasSetup)
+        if (!ConfigurationController.Instance.HasSetup)
         {
             nav.NavigateTo("/setup");
         }
@@ -19,7 +19,7 @@
                     string? auth = await MicrosoftAuthentication.GetMinecraftBearerAccessToken(MinecraftClientID, MicrosoftRedirectURI, MSAFile, true);
                     if (auth != null)
                     {
-                        Configuration.Instance.IsAuthenticated = true;
+                        ConfigurationController.Instance.IsAuthenticated = true;
                         AuthenticationToken = auth;
                         nav.NavigateTo("/instances");
                     }

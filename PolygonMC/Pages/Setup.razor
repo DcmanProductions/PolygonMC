@@ -26,17 +26,17 @@
         case 1:
             <div class="col" style="width: 70%;">
                 <h1>Directories</h1>
-                <FileInputComponent IsDirectory=true Title="Install Directory" DefaultPath=@Configuration.Instance.WorkingDirectory OnItemSelected=@(path=>Configuration.Instance.WorkingDirectory=path) />
+                <FileInputComponent IsDirectory=true Title="Install Directory" DefaultPath=@ConfigurationController.Instance.WorkingDirectory OnItemSelected=@(path=>ConfigurationController.Instance.WorkingDirectory=path) />
             </div>
             break;
         case 2:
             <div class="col" style="width: 70%;">
                 <h1>Java Settings</h1>
                 <label for="min-ram">Minimum RAM (MB):</label>
-                <input type="number" id="min-ram" @bind=Configuration.Instance.RAM.Minimum>
+                <input type="number" id="min-ram" @bind=ConfigurationController.Instance.RAM.Minimum>
                 <label for="max-ram">Maximum RAM (MB):</label>
-                <input type="number" id="max-ram" @bind=Configuration.Instance.RAM.Maximum>
-                @if (!Configuration.Instance.HasDownloadedJava)
+                <input type="number" id="max-ram" @bind=ConfigurationController.Instance.RAM.Maximum>
+                @if (!ConfigurationController.Instance.HasDownloadedJava)
                 {
                     <button class="button" @onclick=InstallJava>Install Java</button>
                 }
@@ -48,9 +48,9 @@
                 <h1>Platforms</h1>
                 <h4>This is only needed if you plan to develop modpacks and upload.</h4>
                 <label for="curseforge-api-key">Curseforge API Key:</label>
-                <input type="text" id="curseforge-api-key" @bind=Configuration.Instance.CurseForgeAPI>
+                <input type="text" id="curseforge-api-key" @bind=ConfigurationController.Instance.CurseForgeAPI>
                 <label for="modrinth-api-key">Modrinth API Key:</label>
-                <input type="text" id="modrinth-api-key" @bind=Configuration.Instance.ModrinthAPI>
+                <input type="text" id="modrinth-api-key" @bind=ConfigurationController.Instance.ModrinthAPI>
             </div>
             break;
         case 4:
@@ -83,13 +83,13 @@
     public int Tab { get; set; } = 0;
     private bool IsInstallingJava { get; set; } = false;
     private bool IsLoading { get; set; } = false;
-    private bool CanFinalize => Configuration.Instance.HasDownloadedJava;
+    private bool CanFinalize => ConfigurationController.Instance.HasDownloadedJava;
     private string JavaLatestText = "";
     private string JavaLegacyText = "";
 
     private async Task InstallJava()
     {
-        if (!Configuration.Instance.HasDownloadedJava)
+        if (!ConfigurationController.Instance.HasDownloadedJava)
         {
             IsInstallingJava = true;
 
@@ -104,7 +104,7 @@
 
                         }
                     });
-            Configuration.Instance.HasDownloadedJava = true;
+            ConfigurationController.Instance.HasDownloadedJava = true;
             IsInstallingJava = false;
         }
     }
@@ -114,8 +114,8 @@
         if (CanFinalize)
         {
             IsLoading = true;
-            Configuration.Instance.HasSetup = true;
-            Configuration.Instance.Save();
+            ConfigurationController.Instance.HasSetup = true;
+            ConfigurationController.Instance.Save();
             nav.NavigateTo("/welcome");
         }
     }

@@ -1,9 +1,9 @@
 ﻿@using PolygonMC.Data;
 @inherits LayoutComponentBase
 
-@if (Configuration.Instance.Theme != "default")
+@if (ConfigurationController.Instance.Theme != "default")
 {
-    <link rel="stylesheet" href="/css/themes/@(Configuration.Instance.Theme).css">
+    <link rel="stylesheet" href="/css/themes/@(ConfigurationController.Instance.Theme).css">
 }
 
 <div class="page">

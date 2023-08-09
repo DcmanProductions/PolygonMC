@@ -36,11 +36,11 @@ public static class Constants
     public static string ApplicationDirectory { get; } = Directory.GetParent(Assembly.GetExecutingAssembly().Location ?? "").FullName;
     public static string MinecraftClientID { get; } = "f8b88f7d-77d7-49ca-9b97-5bb12a4ee48f";
     public static string MicrosoftRedirectURI { get; } = "http://127.0.0.1:56748";
-    public static string MSAFile { get; } = Path.Combine(Configuration.Instance.WorkingDirectory, "msa-auth.json");
-    public static InstanceManager InstanceManager { get; } = new(Path.Combine(Configuration.Instance.WorkingDirectory, "instances"));
-    public static bool IsAuthenticated => Configuration.Instance.IsAuthenticated;
+    public static string MSAFile { get; } = Path.Combine(ConfigurationController.Instance.WorkingDirectory, "msa-auth.json");
+    public static InstanceManager InstanceManager { get; } = new(Path.Combine(ConfigurationController.Instance.WorkingDirectory, "instances"));
+    public static bool IsAuthenticated => ConfigurationController.Instance.IsAuthenticated;
     public static string AuthenticationToken { get; set; } = "";
-    public static string JavaDirectory => Path.Combine(Configuration.Instance.WorkingDirectory, "java");
+    public static string JavaDirectory => Path.Combine(ConfigurationController.Instance.WorkingDirectory, "java");
     public static string[] Themes => Directory.GetFiles(Path.Combine(ApplicationDirectory, "wwwroot", "css", "themes"), "*.css", SearchOption.TopDirectoryOnly).Select(i => Path.GetFileName(i).Replace(Path.GetExtension(i), "")).ToArray();
 
     public static string FormatNumber(byte number) => FormatNumber((int)number);

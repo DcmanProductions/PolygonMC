@@ -16,7 +16,7 @@
     [Parameter]
     public bool IsDirectory { get; set; } = false;
     [Parameter]
-    public string DefaultPath { get; set; } = Configuration.Instance.WorkingDirectory;
+    public string DefaultPath { get; set; } = ConfigurationController.Instance.WorkingDirectory;
     [Parameter]
     public string Filters { get; set; } = "*";
     [Parameter]

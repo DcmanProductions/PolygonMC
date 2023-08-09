@@ -7,7 +7,7 @@
 
     <div class="col fill" style="margin: 0 2rem;">
         <label for="login-email" class="fill">Username</label>
-        <input type="text" id="login-email" placeholder="user123" @bind=Configuration.Instance.Username autocomplete="off" autofocus="true" class="fill">
+        <input type="text" id="login-email" placeholder="user123" @bind=ConfigurationController.Instance.Username autocomplete="off" autofocus="true" class="fill">
     </div>
     <button id="offline-login" class="primary button big" @onclick=@(()=>nav.NavigateTo("/instances"))>Offline</button>
 

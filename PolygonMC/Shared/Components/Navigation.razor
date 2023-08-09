@@ -12,13 +12,13 @@
         <div class="nav-item @(SelectedPage == 2 ?"selected":"")" @onclick=@(()=>nav.NavigateTo("/settings/4"))>
             @if (IsAuthenticated)
             {
-                <i class="nav-icon" style="background-image: url('data:image/png;base64,@UserProfileController.GetFaceBase64(Configuration.Instance.Profile)')"></i>
+                <i class="nav-icon" style="background-image: url('data:image/png;base64,@UserProfileController.GetFaceBase64(ConfigurationController.Instance.Profile)')"></i>
             }
             else
             {
                 <i class="fa fa-user"></i>
             }
-            <span>@Configuration.Instance.Username</span>
+            <span>@ConfigurationController.Instance.Username</span>
         </div>
         <div class="nav-item @(SelectedPage == 3 ?"selected":"")" @onclick=@(()=>nav.NavigateTo("/settings"))> <i class="fa fa-gear"></i> <span>Settings</span> </div>
     </div>

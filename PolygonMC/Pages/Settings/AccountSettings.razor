@@ -2,7 +2,7 @@
 @using PolygonMC.Data;
 <h1>Account Settings</h1>
 <div class="col">
-    <h2>Logged in as @Configuration.Instance.Username 
+    <h2>Logged in as @ConfigurationController.Instance.Username 
         @if (!IsAuthenticated)
         {
             <span>[Offline]</span>

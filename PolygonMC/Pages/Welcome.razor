@@ -47,11 +47,11 @@
             UserProfile? user = await MicrosoftAuthentication.GetUserProfile(token);
             if (user != null)
             {
-                Configuration.Instance.Profile = (UserProfile)user;
-                Configuration.Instance.Username = user.Value.Name;
-                Configuration.Instance.IsAuthenticated = true;
+                ConfigurationController.Instance.Profile = (UserProfile)user;
+                ConfigurationController.Instance.Username = user.Value.Name;
+                ConfigurationController.Instance.IsAuthenticated = true;
             }
-            Configuration.Instance.Save();
+            ConfigurationController.Instance.Save();
             IsLoggingInExternally = false;
             nav.NavigateTo("/instances");
         });
