@@ -44,7 +44,7 @@
                             <textarea type="text" id="description-input" name="description-input" placeholder="Instance Description" @bind=Model.Description></textarea>
                         </div>
                     </div>
-                    <InteractableListComponent Name="Minecraft Versions" Items=MinecraftVersions OnItemSelect="async item=>{SelectedMinecraftVersion=item;await SelectModLoader(SelectedModloaderVersionCategory);StateHasChanged();}" Categories=MinecraftVersionCategories OnCategorySelect="async item=>{await SelectMinecraftVersionCategory(item);}" SelectedCategory=@SelectedMinecraftVersionCategory />
+                    <InteractableListComponent Name="Minecraft Versions" Items=MinecraftVersions OnItemSelect="async item=>{SelectedMinecraftVersion=item;await SelectModLoader(SelectedModloaderVersionCategory);StateHasChanged();}" Categories=MinecraftVersionCategories OnCategorySelect="async item=>{await SelectMinecraftVersionCategory(item);}" SelectedCategory=@SelectedMinecraftVersionCategory SelectedItem=@SelectedMinecraftVersion />
                     @if (!string.IsNullOrWhiteSpace(SelectedMinecraftVersion))
                     {
 
@@ -52,16 +52,16 @@
                         {
                             if (SelectedMinecraftVersionCategory == "snapsnot")
                             {
-                                <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions OnCategorySelect=@(async item=>{await SelectModLoader("fabric");}) OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory="fabric" />
+                                <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions OnCategorySelect=@(async item=>{await SelectModLoader("fabric");}) OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory="fabric" SelectedItem=@SelectedModloaderVersion />
                             }
                             else
                             {
-                                <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions Categories=ModLoaderCategories OnCategorySelect="async item=>{await SelectModLoader(item);}" OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory=@SelectedModloaderVersionCategory />
+                                <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions Categories=ModLoaderCategories OnCategorySelect="async item=>{await SelectModLoader(item);}" OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory=@SelectedModloaderVersionCategory SelectedItem=@SelectedModloaderVersion />
                             }
                         }
                         else
                         {
-                            <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions OnCategorySelect=@(async item=>{await SelectModLoader("forge");}) OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory=@SelectedModloaderVersionCategory />
+                            <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions OnCategorySelect=@(async item=>{await SelectModLoader("forge");}) OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory=@SelectedModloaderVersionCategory SelectedItem=@SelectedModloaderVersion />
                         }
                     }
                     <details class="col fill">
@@ -90,44 +90,7 @@
                 </div>
                 break;
             case 1:
-                <div class="col">
-                    <div class="row">
-                        <h2 class="fill">Mods</h2>
-                        <div id="source-dropdown" class="dropdown" tabindex="0">
-                            <div class="value">@Source</div>
-                            <div class="dropdown-items">
-                                @foreach (PlatformSource source in Enum.GetValues(typeof(PlatformSource)))
-                                {
-                                    @if (source != PlatformSource.Unknown)
-                                    {
-                                        <div class="dropdown-item @(Source==source?"selected":"")" @onclick="() => Source=source">@source</div>
-                                    }
-                                }
-                            </div>
-                        </div>
-                        <div id="limit-dropdown" class="dropdown" tabindex="0">
-                            <div class="value">@ItemsPerPage</div>
-                            <div class="dropdown-items">
-                                <div class="dropdown-item @(ItemsPerPage==10?"selected":"")" @onclick="() => ItemsPerPage=10">10</div>
-                                <div class="dropdown-item @(ItemsPerPage==25?"selected":"")" @onclick="() => ItemsPerPage=25">25</div>
-                                <div class="dropdown-item @(ItemsPerPage==30?"selected":"")" @onclick="() => ItemsPerPage=30">30</div>
-                                <div class="dropdown-item @(ItemsPerPage==50?"selected":"")" @onclick="() => ItemsPerPage=50">50</div>
-                                <div class="dropdown-item @(ItemsPerPage==100?"selected":"")" @onclick="() => ItemsPerPage=100">100</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col fill resource-items">
-                        <Pagination ItemsPerPage=@ItemsPerPage TotalResults=@TotalResults CurrentPage=@CurrentPage OnPageChange=@(i=>{CurrentPage=i;LoadMods();}) />
-                        @if (Source == PlatformSource.Modrinth)
-                        {
-                            foreach (ModrinthSearchResultItem resource in ModrinthSearchResult)
-                            {
-                                <ResourceItemComponent Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.IconUrl Background=@resource.FeaturedGallery IsDownloaded=false />
-                            }
-                        }
-                        <Pagination ItemsPerPage=@ItemsPerPage TotalResults=@TotalResults CurrentPage=@CurrentPage OnPageChange=@(i=>{CurrentPage=i;LoadMods();}) />
-                    </div>
-                </div>
+                <InstanceResourceComponent MinecraftVersion=@SelectedMinecraftVersion ModloaderVersion=@SelectedModloaderVersion Modloader=@((ModLoaders)Enum.Parse(typeof(ModLoaders), SelectedModloaderVersionCategory, true)) />
                 break;
             case 2:
                 break;
@@ -142,7 +105,7 @@
         <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa fa-solid fa-sliders"></i>Settings</div>
         @if (!string.IsNullOrWhiteSpace(SelectedModloaderVersion))
         {
-            <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>{Tab=1;LoadMods();}"><i class="fa fa-solid fa-mortar-pestle"></i>Mods</div>
+            <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-mortar-pestle"></i>Mods</div>
         }
         <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
         <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>Tab=3"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
@@ -165,13 +128,6 @@
     private string SelectedModloaderVersionCategory { get; set; } = "forge";
     private string JavaArguments = "";
     private string MinecraftArguments = "";
-    private ResourceItemComponent[] Mods { get; set; } = Array.Empty<ResourceItemComponent>();
-    private PlatformSource Source { get; set; } = Configuration.Instance.DefaultPlatform;
-    private int ItemsPerPage { get; set; } = 10;
-    private int TotalResults { get; set; } = 0;
-    private int CurrentPage { get; set; } = 0;
-    private string SearchQuery { get; set; } = "";
-    ModrinthSearchResultItem[] ModrinthSearchResult { get; set; } = Array.Empty<ModrinthSearchResultItem>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -208,7 +164,7 @@
                 await FabricLoader.Install(SelectedModloaderVersion, Model);
                 break;
             case ModLoaders.Forge:
-                await ForgeLoader.Install(SelectedModloaderVersion, Model, Configuration.Instance.WorkingDirectory, JavaController.GetLocalJVMInstallations(JavaDirectory).Latest);
+                await ForgeLoader.Install(SelectedModloaderVersion, Model, ConfigurationController.Instance.WorkingDirectory, JavaController.GetLocalJVMInstallations(JavaDirectory).Latest);
                 break;
         }
     }
@@ -239,58 +195,4 @@
         StateHasChanged();
     }
 
-    private async Task LoadMods()
-    {
-        await Task.Run(async () =>
-        {
-            if (Source == PlatformSource.Modrinth)
-            {
-                if (SelectedMinecraftVersionCategory == "release")
-                {
-                    Version version = Version.Parse(SelectedMinecraftVersion);
-                    ModLoaders loader = (ModLoaders)Enum.Parse(typeof(ModLoaders), SelectedModloaderVersionCategory, true);
-                    MinecraftVersionManifest? manifest = await MinecraftVersionController.GetMinecraftVersionManifestAsync();
-                    string[] versions = manifest.Value.Versions.Select(i => i.ID).Where(i =>
-                                    {
-                                        if (Version.TryParse(i, out Version v))
-                                        {
-                                            return v.Major == version.Major && v.Minor == version.Minor;
-                                        }
-                                        return false;
-                                    }).ToArray();
-
-                    using ModrinthClient client = new();
-                    FacetBuilder facets = new FacetBuilder()
-                    .AddVersions(versions)
-                    .AddModloaders(loader)
-                    .AddProjectTypes(Chase.Minecraft.Modrinth.Data.ModrinthProjectTypes.Mod);
-
-                    ModrinthSearchQuery query = new()
-                        {
-                            Limit = ItemsPerPage,
-                            Offset = CurrentPage * ItemsPerPage,
-                            Facets = facets,
-                            Query = SearchQuery,
-                        };
-                    ModrinthSearchResult? result = await client.SearchAsync(query);
-                    if (result != null && result.HasValue)
-                    {
-                        ModrinthSearchResult = result.Value.Hits;
-                        TotalResults = result.Value.TotalHits;
-                    }
-                }
-            }
-            else if (Source == PlatformSource.Curseforge)
-            {
-
-            }
-        });
-        StateHasChanged();
-    }
-    private Task AddModrinthMod(string id) => Task.Run(async () =>
-    {
-
-        using ModrinthClient client = new();
-        var versions = await client.GetProjectVersionsAsync(id);
-    });
 }
