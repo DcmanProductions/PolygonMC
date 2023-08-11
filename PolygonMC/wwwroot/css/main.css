@@ -116,7 +116,7 @@ button, .button {
     font-weight: 400;
 }
 
-    button:before, .button:before {
+    button:before, .button:before,button i, .button i{
         padding: 0 1rem;
     }
 
