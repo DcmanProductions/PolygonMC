@@ -1,12 +1,33 @@
 ﻿<div class="pagination row">
-    @for (int i = CurrentPage; i < TotalPages && i < CurrentPage + 8; i++)
+    @if (CurrentPage > NumberOfVisiblePaginationTabs / 2)
     {
-        <div class="pagination-item@(i==CurrentPage?" selected":"")" @onclick="()=>{OnPageChange.Invoke(i);CurrentPage=i;}">@i</div>
+       // <div class="pagination-item" @onclick=@(() => { CurrentPage = 0; OnPageChange.Invoke(0); })>First</div>
+    }
+    @for (int i = 0; i < NumberOfVisiblePaginationTabs; i++)
+    {
+        int offset = CurrentPage - (int)Math.Ceiling(NumberOfVisiblePaginationTabs / 2d)+1;
+        int currentPage = offset + i;
+
+        if (currentPage >= 0 && currentPage < TotalPages)
+        {
+            <div class="pagination-item@(currentPage == CurrentPage ? " selected" : "")" @onclick=@(() => { CurrentPage = currentPage; OnPageChange.Invoke(currentPage); })>@currentPage</div>
+        }
+        else
+        {
+            <div class="pagination-item no-item"></div>
+        }
+    }
+    @if (CurrentPage + NumberOfVisiblePaginationTabs / 2 < TotalPages)
+    {
+       // <div class="pagination-item" @onclick=@(() => { CurrentPage = TotalPages; OnPageChange.Invoke(TotalPages); })>Last</div>
     }
 </div>
 
+
+
 @code {
-    public int TotalPages => TotalResults / ItemsPerPage;
+    private int TotalPages => TotalResults == 0 || ItemsPerPage == 0 ? 0 : TotalResults / ItemsPerPage;
+    private int NumberOfVisiblePaginationTabs => Math.Min(5, TotalPages);
 
     [Parameter]
     public int CurrentPage { get; set; }
@@ -14,7 +35,6 @@
     public int TotalResults { get; set; }
     [Parameter]
     public int ItemsPerPage { get; set; }
-
     [Parameter]
     public Action<int> OnPageChange { get; set; } = i => { };
 }
