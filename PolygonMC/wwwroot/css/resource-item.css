@@ -5,10 +5,15 @@
     https://www.gnu.org/licenses/gpl-3.0.en.html#license-text
     https://github.com/DcmanProductions/PolygonMC
 */
+
 .resource-items {
-    max-height: calc(100vh - 250px);
+    max-height: calc(100vh - 250px - 75px);
     overflow: scroll;
     padding-right: 1rem;
+}
+
+.resource-item-list{
+    padding-bottom: 120px;
 }
 
 .resource-item {
@@ -66,7 +71,7 @@
 
 .pagination {
     background: var(--background-darker);
-    margin: auto;
+    margin: 5px auto;
 }
 
     .pagination .pagination-item:hover {
@@ -75,9 +80,18 @@
     }
 
     .pagination .pagination-item {
-        padding: 1rem 2rem;
+        aspect-ratio: 1;
+        width: 4.625rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
         .pagination .pagination-item.selected {
             background-color: var(--primary-darker);
+        }
+
+        .pagination .pagination-item.no-item:hover {
+            cursor: default;
+            background: unset;
         }
