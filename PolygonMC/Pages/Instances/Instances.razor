@@ -15,10 +15,27 @@
     <div class="col" style="max-height: 96vh;">
 
         <div class="page-title row center horizontal">
-            <span class="fill">Instances</span>
-            <div class="row">
-                <a href="/instances/create" class="fa fa-plus button">Create</a>
-            </div>
+
+            @switch (Tab)
+            {
+                default:
+                case 0:
+                    <span class="fill">Instances</span>
+                    <div class="row">
+                        <a href="/instances/create" class="button"><i class="fa fa-plus"></i>Create</a>
+                    </div>
+                    break;
+                case 1:
+                    <span class="fill">Resource Packs</span>
+                    <div class="row">
+                        <a href="/discover" class="button"><i class="fa fa-compass"></i>Discover</a>
+                    </div>
+                    break;
+                case 2:
+                    <span class="fill">Shader Packs</span>
+                    <a href="/discover" class="button"> <i class="fa fa-compass"></i> Discover</a>
+                    break;
+            }
         </div>
         <input type="search" name="search-box" id="search-box" placeholder="Search" />
 
@@ -26,29 +43,43 @@
         {
             <span class="loading"></span>
         }
-        <div id="instances-grid" class="grid">
-            @if (!InstanceManager.Instances.Any())
-            {
-                <div class="col fill center horizontal vertical">
-                    <h2>No Instances Found</h2>
-                    <h4>Click <a href="/instances/create">here</a> to create one</h4>
-                </div>
 
-            }
-            else
-            {
-                @foreach (InstanceModel instance in InstanceManager.Instances.Values)
-                {
-                    <InstanceComponent Id="@instance.Id.ToString()" IsInstalled=true BackgroundImage="@instance.Image" MinecraftVersion="@instance.MinecraftVersion.ID" ModLoader="@instance.ModLoader.Modloader.ToString()" Name="@instance.Name" Source="instance.Source" Version="@instance.MinecraftVersion.ID" />
-                }
-            }
-        </div>
+        @switch (Tab)
+        {
+            default:
+            case 0:
+                <div id="instances-grid" class="grid">
+                    @if (!InstanceManager.Instances.Any())
+                    {
+                        <div class="col fill center horizontal vertical">
+                            <h2>No Instances Found</h2>
+                            <h4>Click <a href="/instances/create">here</a> to create one</h4>
+                        </div>
+
+                    }
+                    else
+                    {
+                        @foreach (InstanceModel instance in InstanceManager.Instances.Values)
+                        {
+                            <InstanceComponent Id="@instance.Id.ToString()" IsInstalled=true BackgroundImage="@instance.Image" MinecraftVersion="@instance.MinecraftVersion.ID" ModLoader="@instance.ModLoader.Modloader.ToString()" Name="@instance.Name" Source="instance.Source" Version="@instance.MinecraftVersion.ID" />
+                        }
+                    }
+                </div>
+                break;
+            case 1: break;
+            case 2: break;
+        }
 
     </div>
 </div>
 
+<div class="bottom-nav row alert center horizontal">
+    <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa fa-solid fa-bookmark"></i>Instances</div>
+    <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
+    <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
+</div>
 @code {
-
+    private int Tab { get; set; } = 0;
     private bool IsLoading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
