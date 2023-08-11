@@ -38,6 +38,9 @@ public static class Constants
     public static string MicrosoftRedirectURI { get; } = "http://127.0.0.1:56748";
     public static string MSAFile { get; } = Path.Combine(ConfigurationController.Instance.WorkingDirectory, "msa-auth.json");
     public static InstanceManager InstanceManager { get; } = new(Path.Combine(ConfigurationController.Instance.WorkingDirectory, "instances"));
+    public static string LocalsDirectory { get; } = Path.Combine(ConfigurationController.Instance.WorkingDirectory, "locals");
+    public static string ResourcePacksDirectory { get; } = Path.Combine(LocalsDirectory, "resourcepacks");
+    public static string ShaderPacksDirectory { get; } = Path.Combine(LocalsDirectory, "shaderpacks");
     public static bool IsAuthenticated => ConfigurationController.Instance.IsAuthenticated;
     public static string AuthenticationToken { get; set; } = "";
     public static string JavaDirectory => Path.Combine(ConfigurationController.Instance.WorkingDirectory, "java");
