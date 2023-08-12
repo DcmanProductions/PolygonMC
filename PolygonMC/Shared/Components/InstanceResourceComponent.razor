@@ -22,6 +22,18 @@
     <div class="row">
         <h2 class="center horizontal" style="padding-right: 2rem;">Mods</h2>
         <input type="search" placeholder="Search for Mods" class="fill" @bind=SearchQuery>
+        <div id="source-dropdown" class="dropdown" tabindex="0">
+            <div class="value">@Source</div>
+            <div class="dropdown-items">
+                @foreach (PlatformSource source in Enum.GetValues(typeof(PlatformSource)))
+                {
+                    @if (source != PlatformSource.Unknown)
+                    {
+                        <div class="dropdown-item @(Source==source?"selected":"")" @onclick="() => Source=source">@source</div>
+                    }
+                }
+            </div>
+        </div>
         <div id="limit-dropdown" class="dropdown" tabindex="0">
             <div class="value">@ItemsPerPage</div>
             <div class="dropdown-items">
@@ -48,7 +60,6 @@
 </div>
 @code {
     private bool IsLoading { get; set; } = true;
-    private ResourceItemComponent[] Mods { get; set; } = Array.Empty<ResourceItemComponent>();
     private int ItemsPerPage { get; set; } = 10;
     private int TotalResults { get; set; } = 0;
     private int CurrentPage { get; set; } = 0;
@@ -58,6 +69,8 @@
     public string ModloaderVersion { get; set; } = "";
     [Parameter]
     public ModLoaders Modloader { get; set; }
+
+    public PlatformSource Source { get; set; } = ConfigurationController.Instance.DefaultPlatform;
 
     private SearchResults<Mod> SearchResults { get; set; }
 
