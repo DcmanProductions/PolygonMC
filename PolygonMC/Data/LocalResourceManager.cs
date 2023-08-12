@@ -6,8 +6,31 @@
     https://github.com/DcmanProductions/PolygonMC
 */
 
+using Chase.Minecraft.Model;
+using Chase.Minecraft.Modpacks.Model;
+using Newtonsoft.Json;
+
 namespace PolygonMC.Data;
 
-public static class LocalResourceManager
+public class LocalResourceManager
 {
+    [JsonProperty("resourcepacks")]
+    private List<ResourcePack> ResourcePacks { get; set; }
+
+    [JsonProperty("shaderpacks")]
+    private List<ShaderPack> ShaderPacks { get; set; }
+
+    [JsonProperty("worlds")]
+    private List<World> Worlds { get; set; }
+
+    public LocalResourceManager()
+    {
+        ResourcePacks = new List<ResourcePack>();
+        ShaderPacks = new List<ShaderPack>();
+        Worlds = new List<World>();
+    }
+
+    public void LoadResourcePack(InstanceModel instance, ResourcePack resourcePack)
+    {
+    }
 }
