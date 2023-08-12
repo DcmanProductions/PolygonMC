@@ -56,7 +56,7 @@ internal sealed class ConfigurationController
     public RAMInfo RAM { get; set; } = new RAMInfo();
 
     [JsonProperty("default-platform")]
-    public PlatformSource DefaultPlatform { get; set; } = PlatformSource.Modrinth;
+    public PlatformSource DefaultPlatform { get; set; } = PlatformSource.ALL;
 
     [JsonIgnore]
     public bool IsAuthenticated { get; set; } = false;
