@@ -6,12 +6,15 @@
 @using Chase.Minecraft;
 @using Chase.Minecraft.Modrinth;
 @using PolygonMC.Data;
+@using Chase.Minecraft.Modpacks.Data;
+@using Chase.Minecraft.Modpacks.Model;
+@using Chase.Minecraft.Modpacks;
 <style>
     #page-content {
         --bottom: 0;
     }
 </style>
-@if (IsLoading)
+@if (IsLoading || SearchResults == null)
 {
     <span class="loading"></span>
 }
@@ -19,18 +22,6 @@
     <div class="row">
         <h2 class="center horizontal" style="padding-right: 2rem;">Mods</h2>
         <input type="search" placeholder="Search for Mods" class="fill" @bind=SearchQuery>
-        <div id="source-dropdown" class="dropdown" tabindex="0">
-            <div class="value">@Source</div>
-            <div class="dropdown-items">
-                @foreach (PlatformSource source in Enum.GetValues(typeof(PlatformSource)))
-                {
-                    @if (source != PlatformSource.Unknown)
-                    {
-                        <div class="dropdown-item @(Source==source?"selected":"")" @onclick="() => Source=source">@source</div>
-                    }
-                }
-            </div>
-        </div>
         <div id="limit-dropdown" class="dropdown" tabindex="0">
             <div class="value">@ItemsPerPage</div>
             <div class="dropdown-items">
@@ -42,33 +33,34 @@
             </div>
         </div>
     </div>
-    <Pagination ItemsPerPage=@ItemsPerPage TotalResults=@TotalResults CurrentPage=@CurrentPage OnPageChange=@(i=>{CurrentPage=i;LoadMods();}) />
-    <div class="col fill resource-items">
-        <div class="col fill resource-item-list">
-            @if (Source == PlatformSource.Modrinth)
-            {
-                foreach (ModrinthSearchResultItem resource in ModrinthSearchResult)
+    @if (SearchResults != null)
+    {
+        <Pagination ItemsPerPage=@ItemsPerPage TotalResults=@(SearchResults.TotalResults) CurrentPage=@CurrentPage OnPageChange=@(i=>{CurrentPage=i;LoadMods();}) />
+        <div class="col fill resource-items">
+            <div class="col fill resource-item-list">
+                @foreach (Mod resource in SearchResults.Results)
                 {
-                    <ResourceItemComponent Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.IconUrl Background=@resource.FeaturedGallery IsDownloaded=false />
+                    <ResourceItemComponent Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.Icon Background=@resource.Banner IsDownloaded=false Platform=resource.Platform />
                 }
-            }
+            </div>
         </div>
-    </div>
+    }
 </div>
 @code {
     private bool IsLoading { get; set; } = true;
     private ResourceItemComponent[] Mods { get; set; } = Array.Empty<ResourceItemComponent>();
-    private PlatformSource Source { get; set; } = ConfigurationController.Instance.DefaultPlatform;
     private int ItemsPerPage { get; set; } = 10;
     private int TotalResults { get; set; } = 0;
     private int CurrentPage { get; set; } = 0;
-    private ModrinthSearchResultItem[] ModrinthSearchResult { get; set; } = Array.Empty<ModrinthSearchResultItem>();
     [Parameter]
     public string MinecraftVersion { get; set; } = "";
     [Parameter]
     public string ModloaderVersion { get; set; } = "";
     [Parameter]
     public ModLoaders Modloader { get; set; }
+
+    private SearchResults<Mod> SearchResults { get; set; }
+
     private string query = "";
     private string SearchQuery
     {
@@ -89,43 +81,18 @@
         IsLoading = true;
         await Task.Run(async () =>
         {
-            if (Source == PlatformSource.Modrinth)
+            Version minecraftVersion = Version.Parse(MinecraftVersion);
+            MinecraftVersionManifest? manifest = await MinecraftVersionController.GetMinecraftVersionManifestAsync();
+            MinecraftVersion[] versions = manifest.Value.Versions.Where(i => Version.TryParse(i.ID, out Version v) && v.Major == minecraftVersion.Major && v.Minor == minecraftVersion.Minor).ToArray();
+            SearchBuilder builder = new SearchBuilder(SearchQuery)
+           .SetLimit(ItemsPerPage)
+           .AddLoader(Modloader)
+           .SetOffset(CurrentPage * ItemsPerPage);
+            foreach (MinecraftVersion version in versions)
             {
-                Version version = Version.Parse(MinecraftVersion);
-                MinecraftVersionManifest? manifest = await MinecraftVersionController.GetMinecraftVersionManifestAsync();
-                string[] versions = manifest.Value.Versions.Select(i => i.ID).Where(i =>
-                            {
-                                if (Version.TryParse(i, out Version v))
-                                {
-                                    return v.Major == version.Major && v.Minor == version.Minor;
-                                }
-                                return false;
-                            }).ToArray();
-
-                using ModrinthClient client = new();
-                FacetBuilder facets = new FacetBuilder()
-            .AddVersions(versions)
-            .AddModloaders(Modloader)
-            .AddProjectTypes(Chase.Minecraft.Modrinth.Data.ModrinthProjectTypes.Mod);
-
-                ModrinthSearchQuery query = new()
-                    {
-                        Limit = ItemsPerPage,
-                        Offset = CurrentPage * ItemsPerPage,
-                        Facets = facets,
-                        Query = SearchQuery,
-                    };
-                ModrinthSearchResult? result = await client.SearchAsync(query);
-                if (result != null && result.HasValue)
-                {
-                    ModrinthSearchResult = result.Value.Hits;
-                    TotalResults = result.Value.TotalHits;
-                }
+                builder.AddMinecraftVersion(version);
             }
-            else if (Source == PlatformSource.Curseforge)
-            {
-
-            }
+            SearchResults = await MultiPlatformInteropClient.SearchModsAsync(builder);
         });
         IsLoading = false;
         StateHasChanged();
