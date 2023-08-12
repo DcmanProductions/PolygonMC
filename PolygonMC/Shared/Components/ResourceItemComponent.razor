@@ -1,4 +1,5 @@
-﻿<div class="row resource-item" style="--background: url('@Background')">
+﻿@using Chase.Minecraft.Data;
+<div class="row resource-item @Platform.ToString().ToLower()" style="--background: url('@Background')">
     <div class="icon" style="background-image: url('@Icon')"></div>
     <div class="col resource-content fill">
         <div class="title">@Name</div>
@@ -33,4 +34,6 @@
     public bool IsDownloaded { get; set; }
     [Parameter]
     public string Author { get; set; } = "";
+    [Parameter]
+    public PlatformSource Platform { get; set; }
 }
