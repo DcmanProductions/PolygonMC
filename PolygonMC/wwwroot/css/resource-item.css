@@ -12,7 +12,7 @@
     padding-right: 1rem;
 }
 
-.resource-item-list{
+.resource-item-list {
     padding-bottom: 120px;
 }
 
@@ -24,6 +24,10 @@
     padding: 1rem;
     overflow: hidden;
     min-height: 100px;
+    max-height: 200px;
+    opacity: .75;
+    transition: scale, opacity;
+    transition-duration: 100ms;
 }
 
     .resource-item::before {
@@ -36,6 +40,11 @@
         background: var(--background);
         filter: blur(10px) brightness(.5);
         z-index: -1;
+    }
+
+    .resource-item:hover {
+        scale: 1.01;
+        opacity: 1;
     }
 
     .resource-item .resource-content {
@@ -67,6 +76,15 @@
 
     .resource-item .downloads {
         margin: auto;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .resource-item .action-content {
+    }
+
+    .resource-item .content {
+        cursor: pointer;
     }
 
 .pagination {
