@@ -1,12 +1,14 @@
 ﻿@using Chase.Minecraft.Data;
 <div class="row resource-item @Platform.ToString().ToLower()" style="--background: url('@Background')">
-    <div class="icon" style="background-image: url('@Icon')"></div>
-    <div class="col resource-content fill">
-        <div class="title">@Name</div>
-        <div class="author">by @Author</div>
-        <div class="description">@Description</div>
+    <div class="row fill center horizontal content" @onclick=@(()=>nav.NavigateTo($"/discover/product/{Platform}/{Id}"))>
+        <div class="icon" style="background-image: url('@Icon')"></div>
+        <div class="col resource-content fill">
+            <div class="title">@Name</div>
+            <div class="author">by @Author</div>
+            <div class="description">@Description</div>
+        </div>
     </div>
-    <div class="col">
+    <div class="col action-content">
         <div class="downloads"><i class="fa fa-download"></i>@FormatNumber(Downloads)</div>
         @if (IsDownloaded)
         {
@@ -16,10 +18,13 @@
         {
             <button class="button">Download</button>
         }
+        <a class="button secondary" href="@Website">@Platform</a>
     </div>
 </div>
 
 @code {
+    [Parameter]
+    public string Id { get; set; }
     [Parameter]
     public string Icon { get; set; }
     [Parameter]
@@ -35,5 +40,9 @@
     [Parameter]
     public string Author { get; set; } = "";
     [Parameter]
+    public string Website { get; set; } = "";
+    [Parameter]
     public PlatformSource Platform { get; set; }
+    [Parameter]
+    public Action OnClick { get; set; }
 }
