@@ -20,7 +20,7 @@
 }
 <div class="col">
     <div class="row">
-        <h2 class="center horizontal" style="padding-right: 2rem;">Mods</h2>
+        <h2 class="center horizontal" style="padding-right: 2rem;text-wrap: nowrap;">Mods</h2>
         <input type="search" placeholder="Search for Mods" class="fill" @bind=SearchQuery>
         <div id="source-dropdown" class="dropdown" tabindex="0">
             <div class="value">@Source</div>
@@ -52,7 +52,7 @@
             <div class="col fill resource-item-list">
                 @foreach (Mod resource in SearchResults.Results)
                 {
-                    <ResourceItemComponent Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.Icon Background=@resource.Banner IsDownloaded=false Platform=resource.Platform />
+                    <ResourceItemComponent Id=@resource.ID Website=@resource.Website Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.Icon Background=@resource.Banner IsDownloaded=false Platform=resource.Platform OnClick=@(()=>OnClick.Invoke(resource)) />
                 }
             </div>
         </div>
@@ -69,6 +69,8 @@
     public string ModloaderVersion { get; set; } = "";
     [Parameter]
     public ModLoaders Modloader { get; set; }
+    [Parameter]
+    public Action<ResourceItemBase> OnClick { get; set; }
 
     public PlatformSource Source { get; set; } = ConfigurationController.Instance.DefaultPlatform;
 
@@ -94,16 +96,19 @@
         IsLoading = true;
         await Task.Run(async () =>
         {
-            Version minecraftVersion = Version.Parse(MinecraftVersion);
-            MinecraftVersionManifest? manifest = await MinecraftVersionController.GetMinecraftVersionManifestAsync();
-            MinecraftVersion[] versions = manifest.Value.Versions.Where(i => Version.TryParse(i.ID, out Version v) && v.Major == minecraftVersion.Major && v.Minor == minecraftVersion.Minor).ToArray();
             SearchBuilder builder = new SearchBuilder(SearchQuery)
            .SetLimit(ItemsPerPage)
            .AddLoader(Modloader)
            .SetOffset(CurrentPage * ItemsPerPage);
-            foreach (MinecraftVersion version in versions)
+
+            if (Version.TryParse(MinecraftVersion, out Version minecraftVersion))
             {
-                builder.AddMinecraftVersion(version);
+                MinecraftVersionManifest? manifest = await MinecraftVersionController.GetMinecraftVersionManifestAsync();
+                MinecraftVersion[] versions = manifest.Value.Versions.Where(i => Version.TryParse(i.ID, out Version v) && v.Major == minecraftVersion.Major && v.Minor == minecraftVersion.Minor).ToArray();
+                foreach (MinecraftVersion version in versions)
+                {
+                    builder.AddMinecraftVersion(version);
+                }
             }
             SearchResults = await MultiPlatformInteropClient.SearchModsAsync(builder);
         });

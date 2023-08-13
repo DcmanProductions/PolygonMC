@@ -1,0 +1,101 @@
+﻿@using Chase.Minecraft.Controller;
+@using Chase.Minecraft.Data;
+@using Chase.Minecraft.Model;
+@using Chase.Minecraft.Modrinth.Controller;
+@using Chase.Minecraft.Modrinth.Model;
+@using Chase.Minecraft;
+@using Chase.Minecraft.Modrinth;
+@using PolygonMC.Data;
+@using Chase.Minecraft.Modpacks.Data;
+@using Chase.Minecraft.Modpacks.Model;
+@using Chase.Minecraft.Modpacks;
+<style>
+    #page-content {
+        --bottom: 0;
+    }
+</style>
+@if (IsLoading || SearchResults == null)
+{
+    <span class="loading"></span>
+}
+<div class="col">
+    <div class="row">
+        <h2 class="center horizontal" style="padding-right: 2rem;text-wrap: nowrap;">Shaders</h2>
+        <input type="search" placeholder="Search for Shaders" class="fill" @bind=SearchQuery>
+        <div id="limit-dropdown" class="dropdown" tabindex="0">
+            <div class="value">@ItemsPerPage</div>
+            <div class="dropdown-items">
+                <div class="dropdown-item @(ItemsPerPage==10?"selected":"")" @onclick="() => {ItemsPerPage=10;LoadMods();}">10</div>
+                <div class="dropdown-item @(ItemsPerPage==25?"selected":"")" @onclick="() => {ItemsPerPage=25;LoadMods();}">25</div>
+                <div class="dropdown-item @(ItemsPerPage==30?"selected":"")" @onclick="() => {ItemsPerPage=30;LoadMods();}">30</div>
+                <div class="dropdown-item @(ItemsPerPage==50?"selected":"")" @onclick="() => {ItemsPerPage=50;LoadMods();}">50</div>
+                <div class="dropdown-item @(ItemsPerPage==100?"selected":"")" @onclick="() =>{ItemsPerPage=100;LoadMods();}">100</div>
+            </div>
+        </div>
+    </div>
+    @if (SearchResults != null)
+    {
+        <Pagination ItemsPerPage=@ItemsPerPage TotalResults=@(SearchResults.TotalResults) CurrentPage=@CurrentPage OnPageChange=@(i=>{CurrentPage=i;LoadMods();}) />
+        <div class="col fill resource-items">
+            <div class="col fill resource-item-list">
+                @foreach (ShaderPack resource in SearchResults.Results)
+                {
+                    <ResourceItemComponent Id=@resource.ID Website=@resource.Website Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.Icon Background=@resource.Banner IsDownloaded=false Platform=resource.Platform OnClick=@(()=>OnClick.Invoke(resource)) />
+                }
+            </div>
+        </div>
+    }
+</div>
+@code {
+    private bool IsLoading { get; set; } = true;
+    private int ItemsPerPage { get; set; } = 10;
+    private int TotalResults { get; set; } = 0;
+    private int CurrentPage { get; set; } = 0;
+    [Parameter]
+    public string MinecraftVersion { get; set; } = "";
+    [Parameter]
+    public Action<ResourceItemBase> OnClick { get; set; }
+
+    public PlatformSource Source { get; set; } = ConfigurationController.Instance.DefaultPlatform;
+
+    private SearchResults<ShaderPack> SearchResults { get; set; }
+
+    private string query = "";
+    private string SearchQuery
+    {
+        get => query; set
+        {
+            query = value;
+            LoadMods();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMods();
+        await base.OnInitializedAsync();
+    }
+    private async Task LoadMods()
+    {
+        IsLoading = true;
+        await Task.Run(async () =>
+        {
+            SearchBuilder builder = new SearchBuilder(SearchQuery)
+           .SetLimit(ItemsPerPage)
+           .SetOffset(CurrentPage * ItemsPerPage);
+
+            if (Version.TryParse(MinecraftVersion, out Version minecraftVersion))
+            {
+                MinecraftVersionManifest? manifest = await MinecraftVersionController.GetMinecraftVersionManifestAsync();
+                MinecraftVersion[] versions = manifest.Value.Versions.Where(i => Version.TryParse(i.ID, out Version v) && v.Major == minecraftVersion.Major && v.Minor == minecraftVersion.Minor).ToArray();
+                foreach (MinecraftVersion version in versions)
+                {
+                    builder.AddMinecraftVersion(version);
+                }
+            }
+            SearchResults = await MultiPlatformInteropClient.SearchShaderpacksAsync(builder);
+        });
+        IsLoading = false;
+        StateHasChanged();
+    }
+}
