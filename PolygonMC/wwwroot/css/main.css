@@ -105,7 +105,7 @@ button, .button {
     outline: none;
     border: none;
     overflow: hidden;
-    margin: 1rem;
+    margin: 3px 10px;
     padding: 1rem;
     box-sizing: unset;
     display: flex;
