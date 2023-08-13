@@ -5,113 +5,158 @@
 @using Chase.Minecraft.Forge;
 @using Chase.Minecraft.Model;
 @using Chase.Minecraft;
+@using Chase.Minecraft.Modpacks.Model;
 @using Chase.Minecraft.Modrinth.Controller;
 @using Chase.Minecraft.Modrinth.Model;
 @using Chase.Minecraft.Modrinth;
 @using PolygonMC.Data;
 @using PolygonMC.Shared.Components
+@using PolygonMC.Pages.Instances.Discover;
 
 <link href="/css/create-instance.css" rel="stylesheet" />
 <link href="/css/resource-item.css" rel="stylesheet" />
 <Navigation SelectedPage="0" />
 
-<div id="page-content">
-    <link rel="stylesheet" href="/css/instances.css">
+@if (LoadedResourceItemPage == null)
+{
 
-    <div class="col" style="max-height: 96vh;">
+    <div id="page-content">
+        <link rel="stylesheet" href="/css/instances.css">
 
-        <div class="page-title row center horizontal">
-            <span class="fill">Create Instance</span>
-            <div class="row">
-                <a href="/discover" class="button secondary">Discover More</a>
-                <span>All settings can be changed later</span>
+        <div class="col" style="max-height: 96vh;">
+
+            <div class="page-title row center horizontal">
+                <span class="fill">Create Instance</span>
+                <div class="row">
+                    <a href="/discover" class="button secondary">Discover More</a>
+                    <span>All settings can be changed later</span>
+                </div>
             </div>
-        </div>
 
-        @if (IsLoading)
-        {
-            <span class="loading"></span>
-        }
-        @switch (Tab)
-        {
-            default:
-            case 0:
-                <div id="create-instance-form" class="col">
-                    <div class="row">
-                        <ImageInputComponent />
-                        <div class="col fill">
-                            <input type="text" id="name-input" name="name-input" placeholder="Instance Name" @bind=Model.Name tabindex="0" autofocus>
-                            <textarea type="text" id="description-input" name="description-input" placeholder="Instance Description" @bind=Model.Description></textarea>
+            @if (IsLoading)
+            {
+                <span class="loading"></span>
+            }
+
+            @switch (Tab)
+            {
+                default:
+                case 0:
+                    <div id="create-instance-form" class="col">
+                        <div class="row">
+                            <ImageInputComponent />
+                            <div class="col fill">
+                                <input type="text" id="name-input" name="name-input" placeholder="Instance Name" @bind=Model.Name tabindex="0" autofocus>
+                                <textarea type="text" id="description-input" name="description-input" placeholder="Instance Description" @bind=Model.Description></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <InteractableListComponent Name="Minecraft Versions" Items=MinecraftVersions OnItemSelect="async item=>{SelectedMinecraftVersion=item;await SelectModLoader(SelectedModloaderVersionCategory);StateHasChanged();}" Categories=MinecraftVersionCategories OnCategorySelect="async item=>{await SelectMinecraftVersionCategory(item);}" SelectedCategory=@SelectedMinecraftVersionCategory SelectedItem=@SelectedMinecraftVersion />
-                    @if (!string.IsNullOrWhiteSpace(SelectedMinecraftVersion))
-                    {
-
-                        @if (Version.TryParse(SelectedMinecraftVersion, out Version mcVersion) && mcVersion >= new Version(1, 14))
+                        <InteractableListComponent Name="Minecraft Versions" Items=MinecraftVersions OnItemSelect="async item=>{SelectedMinecraftVersion=item;await SelectModLoader(SelectedModloaderVersionCategory);StateHasChanged();}" Categories=MinecraftVersionCategories OnCategorySelect="async item=>{await SelectMinecraftVersionCategory(item);}" SelectedCategory=@SelectedMinecraftVersionCategory SelectedItem=@SelectedMinecraftVersion />
+                        @if (!string.IsNullOrWhiteSpace(SelectedMinecraftVersion))
                         {
-                            if (SelectedMinecraftVersionCategory == "snapsnot")
+
+                            @if (Version.TryParse(SelectedMinecraftVersion, out Version mcVersion) && mcVersion >= new Version(1, 14))
                             {
-                                <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions OnCategorySelect=@(async item=>{await SelectModLoader("fabric");}) OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory="fabric" SelectedItem=@SelectedModloaderVersion />
+                                if (SelectedMinecraftVersionCategory == "snapsnot")
+                                {
+                                    <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions OnCategorySelect=@(async item=>{await SelectModLoader("fabric");}) OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory="fabric" SelectedItem=@SelectedModloaderVersion />
+                                }
+                                else
+                                {
+                                    <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions Categories=ModLoaderCategories OnCategorySelect="async item=>{await SelectModLoader(item);}" OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory=@SelectedModloaderVersionCategory SelectedItem=@SelectedModloaderVersion />
+                                }
                             }
                             else
                             {
-                                <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions Categories=ModLoaderCategories OnCategorySelect="async item=>{await SelectModLoader(item);}" OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory=@SelectedModloaderVersionCategory SelectedItem=@SelectedModloaderVersion />
+                                <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions OnCategorySelect=@(async item=>{await SelectModLoader("forge");}) OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory=@SelectedModloaderVersionCategory SelectedItem=@SelectedModloaderVersion />
                             }
                         }
-                        else
-                        {
-                            <InteractableListComponent Name="Modloader Versions" Items=ModLoaderVersions OnCategorySelect=@(async item=>{await SelectModLoader("forge");}) OnItemSelect="item=>{SelectedModloaderVersion=item;StateHasChanged();}" SelectedCategory=@SelectedModloaderVersionCategory SelectedItem=@SelectedModloaderVersion />
-                        }
-                    }
-                    <details class="col fill">
-                        <summary>Advanced Settings</summary>
-                        <div class="row">
-                            <div id="screen-size-input" class="col fill">
-                                <h4>Window Size</h4>
-                                <label for="screen-width">Width:</label>
-                                <input type="number" id="screen-width" placeholder="@Model.WindowWidth" @bind=Model.WindowWidth>
-                                <label for="screen-height">Height:</label>
-                                <input type="number" id="screen-height" placeholder="@Model.WindowHeight" @bind=Model.WindowHeight>
+                        <details class="col fill">
+                            <summary>Advanced Settings</summary>
+                            <div class="row">
+                                <div id="screen-size-input" class="col fill">
+                                    <h4>Window Size</h4>
+                                    <label for="screen-width">Width:</label>
+                                    <input type="number" id="screen-width" placeholder="@Model.WindowWidth" @bind=Model.WindowWidth>
+                                    <label for="screen-height">Height:</label>
+                                    <input type="number" id="screen-height" placeholder="@Model.WindowHeight" @bind=Model.WindowHeight>
+                                </div>
+                                <div id="java-settings" class="col fill">
+                                    <h4>Java Settings</h4>
+                                    <label for="min-ram">Minimum RAM (MB):</label>
+                                    <input type="number" id="min-ram" @bind=Model.RAM.Minimum>
+                                    <label for="max-ram">Maximum RAM (MB):</label>
+                                    <input type="number" id="max-ram" @bind=Model.RAM.Maximum>
+                                </div>
                             </div>
-                            <div id="java-settings" class="col fill">
-                                <h4>Java Settings</h4>
-                                <label for="min-ram">Minimum RAM (MB):</label>
-                                <input type="number" id="min-ram" @bind=Model.RAM.Minimum>
-                                <label for="max-ram">Maximum RAM (MB):</label>
-                                <input type="number" id="max-ram" @bind=Model.RAM.Maximum>
-                            </div>
-                        </div>
-                        <label for="java-args">Additional Java Arguments</label>
-                        <textarea name="java-args"></textarea>
-                        <label for="minecraft-args">Additional Minecraft Arguments</label>
-                        <textarea name="minecraft-args"></textarea>
-                    </details>
-                </div>
-                break;
-            case 1:
-                <InstanceResourceComponent MinecraftVersion=@SelectedMinecraftVersion ModloaderVersion=@SelectedModloaderVersion Modloader=@((ModLoaders)Enum.Parse(typeof(ModLoaders), SelectedModloaderVersionCategory, true)) />
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-        }
+                            <label for="java-args">Additional Java Arguments</label>
+                            <textarea name="java-args"></textarea>
+                            <label for="minecraft-args">Additional Minecraft Arguments</label>
+                            <textarea name="minecraft-args"></textarea>
+                        </details>
+                    </div>
+                    break;
+                case 1:
+                    <ModResourceComponent MinecraftVersion=@SelectedMinecraftVersion ModloaderVersion=@SelectedModloaderVersion Modloader=@((ModLoaders)Enum.Parse(typeof(ModLoaders), SelectedModloaderVersionCategory, true)) />
+                    break;
+                case 2:
+                    <ResourcepackResourceComponent MinecraftVersion=@SelectedMinecraftVersion />
+                    break;
+                case 3:
+                    <ShaderpackResourceComponent MinecraftVersion=@SelectedMinecraftVersion />
+                    break;
+                case 4:
+                    break;
+            }
 
+        </div>
+        <div class="bottom-nav row alert center horizontal">
+            <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa fa-solid fa-sliders"></i>Settings</div>
+            @if (!string.IsNullOrWhiteSpace(SelectedModloaderVersion))
+            {
+                <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-mortar-pestle"></i>Mods</div>
+            }
+            <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
+            <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>Tab=3"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
+            <div class="nav-item @(Tab == 4 ?"selected":"")" @onclick="()=>Tab=4"><i class="fa fa-solid fa-check-circle"></i>Finalize</div>
+        </div>
     </div>
-    <div class="bottom-nav row alert center horizontal">
-        <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa fa-solid fa-sliders"></i>Settings</div>
-        @if (!string.IsNullOrWhiteSpace(SelectedModloaderVersion))
-        {
-            <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-mortar-pestle"></i>Mods</div>
-        }
-        <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
-        <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>Tab=3"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
-        <div class="nav-item @(Tab == 4 ?"selected":"")" @onclick="()=>Tab=4"><i class="fa fa-solid fa-check-circle"></i>Finalize</div>
-    </div>
-</div>
+}
+else
+{
+    string type = "unknown";
+    Type loadedType = LoadedResourceItemPage.GetType();
+
+    if (loadedType.Equals(typeof(Mod)))
+    {
+        type = "mod";
+    }
+    else if (loadedType.Equals(typeof(ResourcePack)))
+    {
+        type = "resourcepack";
+    }
+    else if (loadedType.Equals(typeof(ShaderPack)))
+    {
+        type = "shaderpack";
+    }
+    else if (loadedType.Equals(typeof(Modpack)))
+    {
+        type = "modpack";
+    }
+    else if (loadedType.Equals(typeof(Datapack)))
+    {
+        type = "datapack";
+    }
+    else if (loadedType.Equals(typeof(World)))
+    {
+        type = "world";
+    }
+    else if (loadedType.Equals(typeof(Plugins)))
+    {
+        type = "plugins";
+    }
+
+    <ProductPage IsPopup="true" OnClose=@(()=>{ LoadedResourceItemPage=null;StateHasChanged(); }) Source=@LoadedResourceItemPage?.Platform.ToString() Id=@LoadedResourceItemPage?.ID PageURL=@(LoadedResourceItemPage.Website) Type=@( type ) />
+}
 
 @code {
 
@@ -128,6 +173,7 @@
     private string SelectedModloaderVersionCategory { get; set; } = "forge";
     private string JavaArguments = "";
     private string MinecraftArguments = "";
+    private ResourceItemBase LoadedResourceItemPage { get; set; } = null;
 
     protected override async Task OnInitializedAsync()
     {
