@@ -91,7 +91,7 @@
 
 
     <div class="bottom-nav row alert center horizontal">
-        <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>Tab=0"><i class="fa-solid fa-bar-chart"></i>Overview</div>
+        <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>{Tab=0;IsLoading = false;}"><i class="fa-solid fa-bar-chart"></i>Overview</div>
         @if (Images != null && Images.Any())
         {
             <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa-solid fa-images"></i>Gallery</div>
@@ -235,15 +235,12 @@
                     case PlatformSource.Modrinth:
                         using (ModrinthClient client = new())
                         {
-                            ModrinthVersionFile[]? versions = await client.GetProjectVersionsAsync(Id);
+                            ModrinthVersionFile[]? versions = await client.GetProjectVersionsAsync(Id, GetPartialVersions(MinecraftVersion));
                             if (versions != null)
                             {
                                 Parallel.ForEach(versions, version =>
-                            {
-                                try
                                 {
-
-                                    if (string.IsNullOrEmpty(MinecraftVersion) || version.GameVersions.Contains(MinecraftVersion) || (Version.TryParse(MinecraftVersion, out Version v) && version.GameVersions.Select(i => Version.Parse(i)).Any(i => i.Major == v.Major && i.Minor == v.Minor)))
+                                    try
                                     {
                                         if (Enum.TryParse(typeof(ReleaseType), version.VersionType, true, out object type))
                                         {
@@ -259,14 +256,13 @@
                                                 });
                                         }
                                     }
-                                }
-                                catch (Exception e)
-                                {
-                                    Log.Error("Unable to parse version: {VERSION} {MSG}", MinecraftVersion, e.Message, e);
-                                }
-                            });
-                                IsLoading = false;
+                                    catch (Exception e)
+                                    {
+                                        Log.Error("Unable to parse version: {VERSION} {MSG}", MinecraftVersion, e.Message, e);
+                                    }
+                                });
                             }
+                            IsLoading = false;
                         }
                         break;
                     case PlatformSource.Curseforge:
@@ -277,29 +273,37 @@
                             {
                                 Parallel.ForEach(versions, async version =>
                                 {
-                                    if (string.IsNullOrEmpty(MinecraftVersion) || version.GameVersions.Contains(MinecraftVersion) || (Version.TryParse(MinecraftVersion, out Version v) && version.GameVersions.Select(i => Version.Parse(i)).Any(i => i.Major == v.Major && i.Minor == v.Minor)))
+                                    if (string.IsNullOrEmpty(MinecraftVersion) || HasPartialVersion(MinecraftVersion, version.GameVersions))
                                     {
-                                        resourceItemVersions.Add(new ResourceItemVersion()
+                                        try
+                                        {
+                                            ReleaseType ReleaseType = version.ReleaseType switch
                                             {
-                                                ID = version.Id.ToString(),
-                                                Changelog = await client.GetProjectVersionDescription(Id, version.Id.ToString()),
-                                                Version = version.DisplayName,
-                                                Downloads = version.DownloadCount,
-                                                GameVersions = version.GameVersions,
-                                                ReleaseDate = version.FileDate,
-                                                ReleaseType = version.ReleaseType switch
+                                                0 => ReleaseType.Unknown,
+                                                1 => ReleaseType.Release,
+                                                2 => ReleaseType.Beta,
+                                                3 => ReleaseType.Alpha,
+                                                _ => ReleaseType.Unknown,
+                                            };
+                                            resourceItemVersions.Add(new ResourceItemVersion()
                                                 {
-                                                    0 => ReleaseType.Unknown,
-                                                    1 => ReleaseType.Release,
-                                                    2 => ReleaseType.Beta,
-                                                    3 => ReleaseType.Alpha,
-                                                    _ => ReleaseType.Unknown,
-                                                }
-                                            });
+                                                    ID = version.Id.ToString(),
+                                                    Changelog = await client.GetProjectVersionDescription(Id, version.Id.ToString()),
+                                                    Version = version.DisplayName,
+                                                    Downloads = version.DownloadCount,
+                                                    GameVersions = version.GameVersions,
+                                                    ReleaseDate = version.FileDate,
+                                                    ReleaseType = ReleaseType,
+                                                });
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Log.Error("Unable to add curseforge mod version: {MSG}", e.Message, e);
+                                        }
                                     }
                                 });
-                                IsLoading = false;
                             }
+                            IsLoading = false;
                         }
                         break;
                 }
