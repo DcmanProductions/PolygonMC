@@ -1,0 +1,14 @@
+﻿@using Chase.Minecraft.Model.Resources;
+
+<div class="row version-item list-item fill center horizontal">
+    <i class="version-type @(Version.ReleaseType.ToString().ToLower())">@(Version.ReleaseType.ToString().ToUpper()[0])</i>
+    <p class="title fill">@(Version.Version)</p>
+    <p class="game-versions">@(string.Join(", ", Version.GameVersions.Reverse().Take(4)))</p>
+    <p class="downloads">@(FormatNumber(Version.Downloads)) Downloads</p>
+    <button class="btn">Download</button>
+</div>
+
+@code {
+    [Parameter]
+    public ResourceItemVersion Version { get; set; }
+}
