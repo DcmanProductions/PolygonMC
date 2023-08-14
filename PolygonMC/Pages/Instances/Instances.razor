@@ -49,7 +49,7 @@
             default:
             case 0:
                 <div id="instances-grid" class="grid">
-                    @if (!InstanceManager.Instances.Any())
+                    @if (!CurrentInstanceManager.Instances.Any())
                     {
                         <div class="col fill center horizontal vertical">
                             <h2>No Instances Found</h2>
@@ -59,7 +59,7 @@
                     }
                     else
                     {
-                        @foreach (InstanceModel instance in InstanceManager.Instances.Values)
+                        @foreach (InstanceModel instance in CurrentInstanceManager.Instances.Values)
                         {
                             <InstanceComponent Id="@instance.Id.ToString()" IsInstalled=true BackgroundImage="@instance.Image" MinecraftVersion="@instance.MinecraftVersion.ID" ModLoader="@instance.ModLoader.Modloader.ToString()" Name="@instance.Name" Source="instance.Source" Version="@instance.MinecraftVersion.ID" />
                         }
