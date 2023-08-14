@@ -3,6 +3,7 @@
 @using Chase.Minecraft.Data;
 @using Chase.Minecraft.Fabric;
 @using Chase.Minecraft.Forge;
+@using Chase.Minecraft.Instances;
 @using Chase.Minecraft.Model;
 @using Chase.Minecraft;
 @using Chase.Minecraft.Modpacks.Model;
@@ -96,13 +97,13 @@
                     </div>
                     break;
                 case 1:
-                    <ModResourceComponent MinecraftVersion=@SelectedMinecraftVersion ModloaderVersion=@SelectedModloaderVersion Modloader=@((ModLoaders)Enum.Parse(typeof(ModLoaders), SelectedModloaderVersionCategory, true)) />
+                    <ModResourceComponent MinecraftVersion=@SelectedMinecraftVersion ModloaderVersion=@SelectedModloaderVersion Modloader=@((ModLoaders)Enum.Parse(typeof(ModLoaders), SelectedModloaderVersionCategory, true)) OnClick=@(r=>{LoadedResourceItemPage=r;StateHasChanged();}) OnModVersionSelected=@(mod=>InstalledMods.Add(mod)) />
                     break;
                 case 2:
-                    <ResourcepackResourceComponent MinecraftVersion=@SelectedMinecraftVersion />
+                    <ResourcepackResourceComponent MinecraftVersion=@SelectedMinecraftVersion OnClick=@(r=>{LoadedResourceItemPage=r;StateHasChanged();}) />
                     break;
                 case 3:
-                    <ShaderpackResourceComponent MinecraftVersion=@SelectedMinecraftVersion />
+                    <ShaderpackResourceComponent MinecraftVersion=@SelectedMinecraftVersion OnClick=@(r=>{LoadedResourceItemPage=r;StateHasChanged();}) />
                     break;
                 case 4:
                     break;
@@ -155,7 +156,7 @@ else
         type = "plugins";
     }
 
-    <ProductPage IsPopup="true" OnClose=@(()=>{ LoadedResourceItemPage=null;StateHasChanged(); }) Source=@LoadedResourceItemPage?.Platform.ToString() Id=@LoadedResourceItemPage?.ID PageURL=@(LoadedResourceItemPage.Website) Type=@( type ) />
+    <ProductPage IsPopup="true" OnModVersionSelected=@(mod=>InstalledMods.Add(mod)) OnClose=@(()=>{ LoadedResourceItemPage=null;StateHasChanged(); }) Source=@LoadedResourceItemPage?.Platform.ToString() Id=@LoadedResourceItemPage?.ID PageURL=@(LoadedResourceItemPage.Website) Type=@( type ) />
 }
 
 @code {
@@ -174,6 +175,7 @@ else
     private string JavaArguments = "";
     private string MinecraftArguments = "";
     private ResourceItemBase LoadedResourceItemPage { get; set; } = null;
+    private List<ModModel> InstalledMods = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -202,7 +204,7 @@ else
         Model.JVMArguments = JavaArguments.Split(" ");
         Model.MinecraftArguments = MinecraftArguments.Split(" ");
 
-        Model = InstanceManager.Create(Model);
+        Model = CurrentInstanceManager.Create(Model);
 
         switch (modLoader)
         {
@@ -213,6 +215,8 @@ else
                 await ForgeLoader.Install(SelectedModloaderVersion, Model, ConfigurationController.Instance.WorkingDirectory, JavaController.GetLocalJVMInstallations(JavaDirectory).Latest);
                 break;
         }
+        Model.Mods = InstalledMods.ToArray();
+        InstanceManager.ReDownloadMods(Model);
     }
 
     private async Task SelectMinecraftVersionCategory(string category)
