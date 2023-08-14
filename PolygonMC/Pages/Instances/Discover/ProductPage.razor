@@ -1,6 +1,9 @@
 ﻿@using Chase.Minecraft.Curseforge.Controller;
 @using Chase.Minecraft.Curseforge.Model;
 @using Chase.Minecraft.Data;
+@using Chase.Minecraft.Model;
+@using Chase.Minecraft.Modpacks.Data;
+@using Chase.Minecraft.Modpacks.Model;
 @using Chase.Minecraft.Modrinth.Controller;
 @using Chase.Minecraft.Modrinth.Model;
 @using PolygonMC.Data;
@@ -12,10 +15,6 @@
 
 <Navigation SelectedPage="1"></Navigation>
 
-@if (IsPopup)
-{
-    <button class="button secondary" @onclick=@(() => OnClose.Invoke()) style="position: fixed;right: 2rem;"><i class="fa fa-x"></i></button>
-}
 
 <div id="page-content">
 
@@ -25,40 +24,61 @@
     }
     else
     {
-        <h1>@Name</h1>
+        <div class="row" style="margin-bottom: 1rem;">
+            @if (IsPopup)
+            {
+                <button class="button secondary" @onclick=@(() => OnClose.Invoke()) style="height: 1rem;margin: auto 0;margin-right: 2rem;"><i class="fa fa-chevron-left"></i></button>
+            }
+            <h1>@Name</h1>
+        </div>
 
         <div class="row">
             @switch (Tab)
             {
                 case 0:
                     <div id="description" class="col fill">
-                        @(new MarkupString(Body ?? ""))
+                        @(new MarkupString(Markdown.ToHtml(Markdown.Parse(Body.Replace("\\n", "\n"))) ?? ""));
                     </div>
                     break;
                 case 1:
+                    @if (SelectedFullscreenGalleryImageIndex != -1)
+                    {
+                        <FullscreenGalleryItem Images=@Images SelectedIndex=@SelectedFullscreenGalleryImageIndex OnClose=@(()=>{SelectedFullscreenGalleryImageIndex=-1;StateHasChanged();}) />
+                    }
+
                     <div id="gallery-items" class="grid product-content">
-                        @foreach (var gallery in Images)
-                        {
-                            <GalleryItem Title=@(gallery.Title) Description=@(gallery.Description) Image=@(gallery.Url) />
+                        @{
+                            int index = 0;
+                            foreach (var gallery in Images)
+                            {
+                                int selectedIndex = index;
+                                <GalleryItem Title=@(gallery.Title) Description=@(gallery.Description) Image=@(gallery.Url) OnClick=@(()=>{SelectedFullscreenGalleryImageIndex=selectedIndex;StateHasChanged();}) />
+                                index++;
+                            }
+
                         }
                     </div>
                     break;
+                case 2:
+
+                    break;
             }
             <div id="side-bar" class="col">
-                <div class="row">
-                    <div id="banner-image" style="background-image: url('@FeaturedImageUrl')"></div>
-                    <img id="icon" src="@IconUrl" alt="">
-                    <div id="page-title-info" class="col">
-                        <p id="title">@Name</p>
-                        <p id="type">@Type</p>
+                <div id="side-bar-content">
+                    <div class="row">
+                        <div id="banner-image" style="background-image: url('@FeaturedImageUrl')"></div>
+                        <img id="icon" src="@IconUrl" alt="">
+                        <div id="page-title-info" class="col">
+                            <p id="title">@Name</p>
+                            <p id="type">@Type</p>
+                        </div>
                     </div>
+                    <p id="summery">@Description</p>
+                    <p id="downloads"> <i class="fa-solid fa-download"></i> <b>@Downloads</b> Downloads</p>
+                    <p id="followers"> <i class="fa-solid fa-heart"></i> <b>@Followers</b> Followers</p>
+
+                    <a href="@PageURL" class="button fill">View on @Source</a>
                 </div>
-                <p id="summery">@Description</p>
-                <p id="downloads"> <i class="fa-solid fa-download"></i> <b>@Downloads</b> Downloads</p>
-                <p id="followers"> <i class="fa-solid fa-heart"></i> <b>@Followers</b> Followers</p>
-
-                <a href="@PageURL" class="button fill">View on @Source</a>
-
             </div>
         </div>
     }
@@ -75,17 +95,20 @@
 </div>
 @code {
     private bool IsLoading { get; set; } = true;
+    private int SelectedFullscreenGalleryImageIndex = -1;
     public string FeaturedImageUrl { get; set; } = "";
 
     private string Name { get; set; }
     private string Description { get; set; }
     private string Body { get; set; }
-    private string Type { get; set; }
     private int Downloads { get; set; }
     private int Followers { get; set; }
     private string IconUrl { get; set; }
     private int Tab { get; set; } = -1;
+    private ResourceItemVersion[] Versions { get; set; }
 
+    [Parameter]
+    public string Type { get; set; }
     [Parameter]
     public string Id { get; set; }
     [Parameter]
@@ -95,15 +118,17 @@
     [Parameter]
     public Chase.Minecraft.Modrinth.Model.GalleryItem[] Images { get; set; } = Array.Empty<Chase.Minecraft.Modrinth.Model.GalleryItem>();
     [Parameter]
-    public bool IsPopup { get; set; } = true;
+    public bool IsPopup { get; set; } = false;
     [Parameter]
     public Action OnClose { get; set; } = () => { };
+    [Parameter]
+    public Action<ModModel> OnModVersionSelected { get; set; } = mod => { };
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
         Tab = 0;
         await Refresh();
+        await base.OnInitializedAsync();
     }
 
 
@@ -159,7 +184,8 @@
                         {
                             Name = project.Value.Name;
                             Downloads = project.Value.DownloadCount;
-                            Description = "";
+                            Description = project.Value.Summary;
+                            Body = await client.
                             Followers = 0;
                             IconUrl = project.Value.Logo.Url;
                             Images = Array.ConvertAll(project.Value.Screenshots, i =>
@@ -185,6 +211,69 @@
                     break;
             }
         }
+    }
+
+    private async Task LoadVersions()
+    {
+        IsLoading = true;
+        List<ResourceItemVersion> resourceItemVersions = new();
+        if (Enum.TryParse(typeof(PlatformSource), Source, true, out object tmp))
+        {
+            PlatformSource platform = (PlatformSource)tmp;
+            switch (platform)
+            {
+                case PlatformSource.Modrinth:
+                    using (ModrinthClient client = new())
+                    {
+                        ModrinthVersionFile[]? versions = await client.GetProjectVersionsAsync(Id);
+                        if (versions != null)
+                        {
+                            foreach (ModrinthVersionFile version in versions)
+                            {
+                                if (Enum.TryParse(typeof(ReleaseType), version.VersionType, true, out object type))
+                                {
+                                    resourceItemVersions.Add(new ResourceItemVersion()
+                                        {
+                                            ID = version.Id,
+                                            Changelog = version.Changelog,
+                                            Version = version.Name,
+                                            Downloads = version.Downloads,
+                                            GameVersions = version.GameVersions,
+                                            ReleaseDate = version.DatePublished,
+                                            ReleaseType = (ReleaseType)type
+                                        });
+                                }
+                            }
+                            IsLoading = false;
+                        }
+                    }
+                    break;
+                case PlatformSource.Curseforge:
+                    using (CurseforgeClient client = new(CurseForgeAPI))
+                    {
+                        ModFile[]? versions = await client.GetModFiles(Id);
+                        if (versions != null)
+                        {
+                            foreach (var version in versions)
+                            {
+                                    resourceItemVersions.Add(new ResourceItemVersion()
+                                        {
+                                            ID = version.Id.ToString(),
+                                            Changelog = version.Changelog,
+                                            Version = version.Name,
+                                            Downloads = version.Downloads,
+                                            GameVersions = version.GameVersions,
+                                            ReleaseDate = version.DatePublished,
+                                            ReleaseType = (ReleaseType)type
+                                        });
+                            }
+                            IsLoading = false;
+                        }
+                    }
+                    break;
+            }
+        }
+        Versions = resourceItemVersions.ToArray();
     }
 
 }
