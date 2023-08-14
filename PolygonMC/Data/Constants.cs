@@ -37,7 +37,7 @@ public static class Constants
     public static string MinecraftClientID { get; } = "f8b88f7d-77d7-49ca-9b97-5bb12a4ee48f";
     public static string MicrosoftRedirectURI { get; } = "http://127.0.0.1:56748";
     public static string MSAFile { get; } = Path.Combine(ConfigurationController.Instance.WorkingDirectory, "msa-auth.json");
-    public static InstanceManager InstanceManager { get; } = new(Path.Combine(ConfigurationController.Instance.WorkingDirectory, "instances"));
+    public static InstanceManager CurrentInstanceManager { get; } = new(Path.Combine(ConfigurationController.Instance.WorkingDirectory, "instances"));
     public static string LocalsDirectory { get; } = Path.Combine(ConfigurationController.Instance.WorkingDirectory, "locals");
     public static string CurseForgeAPI { get; } = @"$2a$10$qD2UJdpHaeDaQyGGaGS0QeoDnKq2EC7sX6YSjOxYHtDZSQRg04BCG";
     public static string ResourcePacksDirectory { get; } = Path.Combine(LocalsDirectory, "resourcepacks");
