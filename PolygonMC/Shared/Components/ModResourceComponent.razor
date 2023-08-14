@@ -28,7 +28,7 @@
                 {
                     @if (source != PlatformSource.Unknown)
                     {
-                        <div class="dropdown-item @(Source==source?"selected":"")" @onclick="() => Source=source">@source</div>
+                        <div class="dropdown-item @(Source==source?"selected":"")" @onclick="() => {Source=source;LoadMods();}">@source</div>
                     }
                 }
             </div>
@@ -101,6 +101,16 @@
            .SetLimit(ItemsPerPage)
            .AddLoader(Modloader)
            .SetOffset(CurrentPage * ItemsPerPage);
+
+
+            if (Source == PlatformSource.ALL || Source == PlatformSource.Curseforge)
+            {
+                builder.AddPlatform(PlatformSource.Curseforge, CurseForgeAPI);
+            }
+            if (Source == PlatformSource.ALL || Source == PlatformSource.Modrinth)
+            {
+                builder.AddPlatform(PlatformSource.Modrinth);
+            }
 
             if (Version.TryParse(MinecraftVersion, out Version minecraftVersion))
             {
