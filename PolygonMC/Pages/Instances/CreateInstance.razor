@@ -6,7 +6,7 @@
 @using Chase.Minecraft.Instances;
 @using Chase.Minecraft.Model;
 @using Chase.Minecraft;
-@using Chase.Minecraft.Modpacks.Model;
+@using Chase.Minecraft.Model.Resources;
 @using Chase.Minecraft.Modrinth.Controller;
 @using Chase.Minecraft.Modrinth.Model;
 @using Chase.Minecraft.Modrinth;
@@ -156,7 +156,7 @@ else
         type = "plugins";
     }
 
-    <ProductPage IsPopup="true" OnModVersionSelected=@(mod=>InstalledMods.Add(mod)) OnClose=@(()=>{ LoadedResourceItemPage=null;StateHasChanged(); }) Source=@LoadedResourceItemPage?.Platform.ToString() Id=@LoadedResourceItemPage?.ID PageURL=@(LoadedResourceItemPage.Website) Type=@( type ) />
+    <ProductPage IsPopup="true" MinecraftVersion=@SelectedMinecraftVersion OnModVersionSelected=@(mod=>InstalledMods.Add(mod)) OnClose=@(()=>{ LoadedResourceItemPage=null;StateHasChanged(); }) Source=@LoadedResourceItemPage?.Platform.ToString() Id=@LoadedResourceItemPage?.ID PageURL=@(LoadedResourceItemPage.Website) Type=@( type ) />
 }
 
 @code {
