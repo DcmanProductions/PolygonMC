@@ -1,21 +1,35 @@
-﻿<div class="popup">
-    <div class="gallery-item popup-content" style="background-image: url('@Image')">
+﻿@using GalleryImage = Chase.Minecraft.Modrinth.Model.GalleryItem;
+
+<div class="popup">
+    <div class="popup-close-field" @onclick=OnClose></div>
+    <div class="gallery-item popup-content" style="background-image: url('@SelectedImage.Url')">
         <button id="close-button" class="secondary fa fa-close" @onclick=OnClose></button>
-        <button id="next-button center horizontal vertical" @onclick="()=>{}"> <i class="fa fa-solid fa-chevron-right"></i> </button>
-        <button id="next-button center horizontal vertical" @onclick="()=>{}"> <i class="fa fa-solid fa-chevron-left"></i> </button>
+        @if (HasPrevious)
+        {
+            <button id="previous-button" class="center horizontal vertical" @onclick="()=>SelectedIndex--"> <i class="fa fa-solid fa-chevron-left"></i> </button>
+        }
+        @if (HasNext)
+        {
+            <button id="next-button" class="center horizontal vertical" @onclick="()=>SelectedIndex++"> <i class="fa fa-solid fa-chevron-right"></i> </button>
+        }
         <div class="gallery-info">
-            <div class="gallery-title">@Title</div>
-            <div class="gallery-description">@Description</div>
+            <div class="gallery-title">@SelectedImage.Title</div>
+            <div class="gallery-description">@SelectedImage.Description</div>
         </div>
     </div>
 </div>
 @code {
     [Parameter]
-    public string Image { get; set; }
+    public int SelectedIndex { get; set; } = 0;
+
     [Parameter]
-    public string Title { get; set; }
-    [Parameter]
-    public string Description { get; set; }
+    public GalleryImage[] Images { get; set; }
+    private GalleryImage SelectedImage => Images[SelectedIndex];
+
+    private bool HasPrevious => SelectedIndex != 0;
+    private bool HasNext => SelectedIndex != Images.Length - 1;
+
+
     [Parameter]
     public Action OnClose { get; set; }
 }
