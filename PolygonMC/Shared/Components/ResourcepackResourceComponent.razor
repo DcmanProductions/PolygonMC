@@ -40,7 +40,7 @@
             <div class="col fill resource-item-list">
                 @foreach (ResourcePack resource in SearchResults.Results)
                 {
-                    <ResourceItemComponent Id=@resource.ID Website=@resource.Website Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.Icon Background=@resource.Banner IsDownloaded=false Platform=resource.Platform OnClick=@(()=>OnClick.Invoke(resource)) />
+                    <ResourceItemComponent Id=@resource.ID Website=@resource.Website Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.Icon Background=@resource.Banner IsDownloaded=false Platform=resource.Platform OnClick=@(()=>OnClick.Invoke(resource))  />
                 }
             </div>
         </div>
@@ -54,7 +54,7 @@
     [Parameter]
     public string MinecraftVersion { get; set; } = "";
     [Parameter]
-    public Action<ResourceItemBase> OnClick { get; set; }
+    public Action<ResourceItemBase> OnClick { get; set; } = r => { };
 
     public PlatformSource Source { get; set; } = ConfigurationController.Instance.DefaultPlatform;
 
