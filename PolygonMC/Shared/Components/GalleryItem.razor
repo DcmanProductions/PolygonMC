@@ -1,15 +1,10 @@
 ﻿
-<div class="gallery-item" style="background-image: url('@Image')" @onclick="()=>IsFullscreen=true">
+<div class="gallery-item" style="background-image: url('@Image')" @onclick=@(()=>OnClick.Invoke())>
     <div class="gallery-info">
         <div class="gallery-title">@Title</div>
         <div class="gallery-description">@Description</div>
     </div>
 </div>
-
-@if (IsFullscreen)
-{
-    <FullscreenGalleryItem Title="@Title" Description="@Description" Image="@Image" OnClose="()=>IsFullscreen=false"></FullscreenGalleryItem>
-}
 
 @code {
     [Parameter]
@@ -18,5 +13,6 @@
     public string Title { get; set; }
     [Parameter]
     public string Description { get; set; }
-    private bool IsFullscreen { get; set; }
+    [Parameter]
+    public Action OnClick { get; set; }
 }
