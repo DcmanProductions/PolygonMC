@@ -101,10 +101,47 @@ iframe {
             margin-top: 0;
         }
 
+.version-list {
+    max-width: calc(100% - 600px);
+    height: auto;
+}
 
-        @media (max-height: 837px){
+    .version-list .version-item {
+        min-width: fit-content;
+    }
 
-            #side-bar #side-bar-content {
-                padding-bottom: 100px;
-            }
+        .version-list .version-item > * {
+            margin: auto 1rem;
+            padding: 0 1rem;
         }
+
+        .version-list .version-item .btn {
+            padding: 1rem 4rem;
+        }
+
+        .version-list .version-item .version-type {
+            background: #3f3f3f;
+            padding: 1rem;
+            font-style: normal;
+            margin-right: 1rem;
+            color: var(--background);
+        }
+
+            .version-list .version-item .version-type.release {
+                background: hsl(149, 100%, 51%);
+            }
+
+            .version-list .version-item .version-type.beta {
+                background: hsl(206, 100%,51%);
+            }
+
+            .version-list .version-item .version-type.alpha {
+                background: hsl(25, 100%, 51%);
+            }
+
+
+@media (max-height: 837px) {
+    #side-bar #side-bar-content {
+        padding-bottom: 100px;
+    }
+}
