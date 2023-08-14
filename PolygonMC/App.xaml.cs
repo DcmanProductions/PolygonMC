@@ -15,6 +15,7 @@ public partial class App : Application
         InitializeComponent();
 
         MainPage = new MainPage();
+        ConsoleWindow consoleWindow = new ConsoleWindow();
     }
 
     protected override Window CreateWindow(IActivationState activationState)
@@ -22,6 +23,7 @@ public partial class App : Application
         Window window = base.CreateWindow(activationState);
 
         window.Title = ApplicationName;
+
         window.MinimumWidth = 1280;
         window.MinimumHeight = 720;
 

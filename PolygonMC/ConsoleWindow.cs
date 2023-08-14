@@ -19,11 +19,11 @@ public partial class ConsoleWindow : Application
     {
         Window window = base.CreateWindow(activationState);
 
-        window.Title = "Console - PolygonMC";
-        window.Width = window.MinimumWidth = 800;
-        window.Height = window.MinimumHeight = 480;
+        window.Title = $"Console - {ApplicationName}";
+        window.Width = window.MinimumWidth = 600;
+        window.Height = window.MinimumHeight = 300;
         window.Y = window.X = 50;
 
-        return base.CreateWindow(activationState);
+        return window;
     }
 }
