@@ -1,6 +1,7 @@
 ﻿@using Chase.Minecraft.Data;
+@using Chase.Minecraft.Model;
 <div class="row resource-item @Platform.ToString().ToLower()" style="--background: url('@Background')">
-    <div class="row fill center horizontal content" @onclick=@(()=>nav.NavigateTo($"/discover/product/{Platform}/{Id}"))>
+    <div class="row fill center horizontal content" @onclick=@(()=>OnClick.Invoke())>
         <div class="icon" style="background-image: url('@Icon')"></div>
         <div class="col resource-content fill">
             <div class="title">@Name</div>
@@ -44,5 +45,7 @@
     [Parameter]
     public PlatformSource Platform { get; set; }
     [Parameter]
-    public Action OnClick { get; set; }
+    public Action OnClick { get; set; } = () => { };
+    [Parameter]
+    public Action<ModModel> OnModVersionSelected { get; set; } = mod => { };
 }
