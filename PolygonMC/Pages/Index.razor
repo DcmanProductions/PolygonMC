@@ -12,7 +12,8 @@
         }
         else
         {
-            Task.Run(async () =>
+            bool isLoggedIn = false;
+            await Task.Run(async () =>
             {
                 if (File.Exists(MSAFile))
                 {
@@ -21,14 +22,19 @@
                     {
                         ConfigurationController.Instance.IsAuthenticated = true;
                         AuthenticationToken = auth;
-                        nav.NavigateTo("/instances");
+                        isLoggedIn = true;
                     }
                 }
-                else
-                {
-                        nav.NavigateTo("/welcome");
-                }
             });
+            
+            if (isLoggedIn)
+            {
+                nav.NavigateTo("/instances");
+            }
+            else
+            {
+                nav.NavigateTo("/welcome");
+            }
         }
         await base.OnInitializedAsync();
     }
