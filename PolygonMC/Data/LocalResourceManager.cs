@@ -7,7 +7,7 @@
 */
 
 using Chase.Minecraft.Model;
-using Chase.Minecraft.Modpacks.Model;
+using Chase.Minecraft.Model.Resources;
 using Newtonsoft.Json;
 
 namespace PolygonMC.Data;
