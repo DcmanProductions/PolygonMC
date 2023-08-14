@@ -1,12 +1,20 @@
-﻿.popup{
+﻿/*
+    PolygonMC - LFInteractive LLC. 2021-2024
+    PolygonMC is a free and open source Minecraft Launcher implementing various modloaders, mod platforms, and minecraft authentication.
+    PolygonMC is protected under GNU GENERAL PUBLIC LICENSE version 3.0 License
+    https://www.gnu.org/licenses/gpl-3.0.en.html#license-text
+    https://github.com/DcmanProductions/PolygonMC
+*/
+
+.popup {
     display: flex;
 }
 
-.popup .popup-content {
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-}
+    .popup .popup-content {
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
 
 .gallery-item {
     position: relative;
@@ -52,17 +60,30 @@
 
 .gallery-item:hover {
     cursor: pointer;
-    scale: 1.01; 
+    scale: 1.01;
 }
+
 .gallery-item.popup-content {
     width: 100%;
     margin: auto;
     border-color: var(--primary);
     background-color: hsl(0,0%,5%);
 }
-.gallery-item.popup-content:hover{
-    cursor: default;
-    scale: 1;
+
+    .gallery-item.popup-content:hover {
+        cursor: default;
+        scale: 1;
+    }
+
+.gallery-item #next-button, .gallery-item #previous-button {
+    position: absolute;
+    top: calc(50% - 3rem);
 }
 
+.gallery-item #next-button {
+    right: 1rem;
+}
 
+.gallery-item #previous-button {
+    left: 1rem;
+}
