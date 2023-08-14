@@ -7,6 +7,7 @@
 */
 
 global using static PolygonMC.Data.Constants;
+using Chase.Minecraft.Controller;
 using Chase.Minecraft.Instances;
 using Newtonsoft.Json;
 using System.Reflection;
@@ -68,5 +69,41 @@ public static class Constants
         }
 
         return $"{value:0.##}{suffixes[magnitude]}";
+    }
+
+    public static string[] GetPartialVersions(string version)
+    {
+        if (Version.TryParse(version, out Version v))
+        {
+            return GetPartialVersions(v);
+        }
+        return Array.Empty<string>();
+    }
+
+    public static string[] GetPartialVersions(Version version)
+    {
+        List<string> versions = new();
+        foreach (Chase.Minecraft.Model.MinecraftVersion v in MinecraftVersionController.GetMinecraftVersionManifest().Value.Versions)
+        {
+            if (v.Type == "release" && Version.TryParse(v.ID, out Version mcVersion) && version.Major == mcVersion.Major && version.Minor == mcVersion.Minor)
+            {
+                versions.Add(mcVersion.ToString());
+            }
+        }
+        return versions.ToArray();
+    }
+
+    public static bool HasPartialVersion(string version, string[] versions)
+    {
+        string[] partials = GetPartialVersions(version);
+        foreach (string v in versions)
+        {
+            if (partials.Contains(v))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
