@@ -7,7 +7,6 @@
 */
 
 using Chase.Minecraft.Controller;
-using Microsoft.Extensions.Logging;
 using PolygonMC.Data;
 using Serilog.Formatting.Json;
 using System.IO.Pipes;
@@ -37,7 +36,7 @@ public static class MauiProgram
         {
             Log.CloseAndFlush();
         };
-        Log.Debug("Starting PolygonMC - {ARGS}", string.Join(' ', Environment.GetCommandLineArgs()));
+        Log.Debug("Starting PolygonMC - {VER}", ApplicationVersion);
 
         using (Mutex mutex = new(true, ApplicationName, out bool createNew))
         {
