@@ -97,7 +97,7 @@
                     </div>
                     break;
                 case 1:
-                    <ModResourceComponent MinecraftVersion=@SelectedMinecraftVersion ModloaderVersion=@SelectedModloaderVersion Modloader=@((ModLoaders)Enum.Parse(typeof(ModLoaders), SelectedModloaderVersionCategory, true)) OnClick=@(r=>{LoadedResourceItemPage=r;StateHasChanged();}) OnModVersionSelected=@(mod=>InstalledMods.Add(mod)) />
+                    <ModResourceComponent MinecraftVersion=@SelectedMinecraftVersion ModloaderVersion=@SelectedModloaderVersion Modloader=@((ModLoaders)Enum.Parse(typeof(ModLoaders), SelectedModloaderVersionCategory, true)) OnClick=@(r=>{LoadedResourceItemPage=r;StateHasChanged();}) OnModVersionSelected=@(mod=>InstalledMods.Add(mod)) InstalledModIds=@(InstalledMods.Select(i=>i.ProjectID).ToArray()) />
                     break;
                 case 2:
                     <ResourcepackResourceComponent MinecraftVersion=@SelectedMinecraftVersion OnClick=@(r=>{LoadedResourceItemPage=r;StateHasChanged();}) />
@@ -124,39 +124,39 @@
 }
 else
 {
-    string type = "unknown";
+    ProjectTypes type = ProjectTypes.Mod;
     Type loadedType = LoadedResourceItemPage.GetType();
 
     if (loadedType.Equals(typeof(Mod)))
     {
-        type = "mod";
+        type = ProjectTypes.Mod;
     }
     else if (loadedType.Equals(typeof(ResourcePack)))
     {
-        type = "resourcepack";
+        type = ProjectTypes.Resourcepack;
     }
     else if (loadedType.Equals(typeof(ShaderPack)))
     {
-        type = "shaderpack";
+        type = ProjectTypes.Shader;
     }
     else if (loadedType.Equals(typeof(Modpack)))
     {
-        type = "modpack";
+        type = ProjectTypes.Modpack;
     }
     else if (loadedType.Equals(typeof(Datapack)))
     {
-        type = "datapack";
+        type = ProjectTypes.Datapack;
     }
     else if (loadedType.Equals(typeof(World)))
     {
-        type = "world";
+        type = ProjectTypes.World;
     }
     else if (loadedType.Equals(typeof(Plugins)))
     {
-        type = "plugins";
+        type = ProjectTypes.Plugins;
     }
 
-    <ProductPage IsPopup="true" MinecraftVersion=@SelectedMinecraftVersion OnModVersionSelected=@(mod=>InstalledMods.Add(mod)) OnClose=@(()=>{ LoadedResourceItemPage=null;StateHasChanged(); }) Source=@LoadedResourceItemPage?.Platform.ToString() Id=@LoadedResourceItemPage?.ID PageURL=@(LoadedResourceItemPage.Website) Type=@( type ) />
+    <ProductPage IsPopup="true" MinecraftVersion=@SelectedMinecraftVersion OnModVersionSelected=@(mod=>InstalledMods.Add(mod)) OnClose=@(()=>{ LoadedResourceItemPage=null;StateHasChanged(); }) Source=@((PlatformSource)LoadedResourceItemPage?.Platform) Id=@LoadedResourceItemPage?.ID PageURL=@(LoadedResourceItemPage.Website) Type=@( type ) />
 }
 
 @code {
