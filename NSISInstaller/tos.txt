@@ -1,0 +1,32 @@
+PolygonMC Minecraft Launcher - Terms of Service
+
+1. Acceptance of Terms
+   Welcome to PolygonMC Minecraft Launcher ("PolygonMC"). By using PolygonMC, you agree to be bound by the following Terms of Service. If you do not agree to these terms, please refrain from using PolygonMC.
+
+2. Not Affiliated with Mojang
+   PolygonMC is an independent Minecraft Launcher and is not affiliated with, endorsed by, or associated with Mojang AB or its parent company Microsoft Corporation. Minecraft and Mojang are registered trademarks of Mojang AB.
+
+3. Redistribution Prohibited
+   You may use PolygonMC for personal use only. Redistribution of PolygonMC, in any form or through any medium, is strictly prohibited. You may not distribute, sell, modify, reverse engineer, or exploit any part of the PolygonMC Minecraft Launcher without explicit written permission from the creators of PolygonMC.
+
+4. Downloaded Mods
+   PolygonMC may provide you with access to third-party mods and content created by other users. These mods are not created, endorsed, or verified by PolygonMC, and we do not assume any responsibility for the content, functionality, or safety of these mods. By using PolygonMC, you acknowledge and agree that you download and use these mods at your own risk.
+
+5. Limitation of Liability
+   PolygonMC and its creators shall not be held liable for any damages, direct or indirect, incidental or consequential, arising out of or in connection with the use or inability to use PolygonMC, including but not limited to damages for loss of profits, data, or other intangible losses, even if PolygonMC has been advised of the possibility of such damages.
+
+6. Changes to the Terms of Service
+   PolygonMC reserves the right to update or modify these Terms of Service at any time without prior notice. Any changes will be effective immediately upon posting on the PolygonMC website or within the Launcher. Your continued use of PolygonMC after the posting of any changes constitutes acceptance of those changes.
+
+7. Indemnification
+   By using PolygonMC, you agree to defend, indemnify, and hold harmless PolygonMC and its creators from and against any and all claims, damages, obligations, losses, liabilities, costs, or debt, and expenses (including but not limited to attorney's fees) arising from your use of PolygonMC or any violation of these Terms of Service.
+
+8. Severability
+   If any provision of these Terms of Service is found to be unenforceable or invalid, the remaining provisions shall remain in full force and effect.
+
+9. Governing Law
+   These Terms of Service shall be governed by and construed in accordance with the laws of the United States of America, without regard to its conflict of laws principles.
+
+By using PolygonMC, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service. If you do not agree to these terms, please discontinue the use of PolygonMC. If you have any questions or concerns regarding these Terms of Service, please contact us at contact@lfinteractive.net.
+
+Visit our homepage at https://polygonmc.lfinteractive.net
