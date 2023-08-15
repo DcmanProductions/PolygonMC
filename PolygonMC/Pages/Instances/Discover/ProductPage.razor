@@ -64,7 +64,7 @@
                     <div class="col version-list list-body fill">
                         @foreach (ResourceItemVersion version in Versions)
                         {
-                            <VersionItemComponent Version=@version />
+                            <VersionItemComponent Version=@version OnDownload=@(()=>PopulateMod(version)) />
                         }
                     </div>
                     break;
@@ -114,11 +114,11 @@
     private ResourceItemVersion[] Versions { get; set; } = Array.Empty<ResourceItemVersion>();
 
     [Parameter]
-    public string Type { get; set; }
+    public ProjectTypes Type { get; set; }
     [Parameter]
     public string Id { get; set; }
     [Parameter]
-    public string Source { get; set; }
+    public PlatformSource Source { get; set; }
     [Parameter]
     public string PageURL { get; set; }
     [Parameter]
@@ -143,81 +143,77 @@
     private async Task Refresh()
     {
         IsLoading = true;
-        if (Enum.TryParse(typeof(PlatformSource), Source, true, out object tmp))
+        switch (Source)
         {
-            PlatformSource platform = (PlatformSource)tmp;
-            switch (platform)
-            {
-                case PlatformSource.Modrinth:
-                    using (ModrinthClient client = new())
+            case PlatformSource.Modrinth:
+                using (ModrinthClient client = new())
+                {
+                    ModrinthProject? project = await client.GetProjectAsync(Id);
+                    if (project != null)
                     {
-                        ModrinthProject? project = await client.GetProjectAsync(Id);
-                        if (project != null)
+                        Name = project.Value.Title;
+                        Body = project.Value.Body;
+                        Downloads = project.Value.Downloads;
+                        Followers = project.Value.Followers;
+                        IconUrl = project.Value.IconUrl;
+                        Images = project.Value.Gallery;
+                        Description = project.Value.Description;
+                        if (project.Value.Gallery.Any(i => i.Featured))
                         {
-                            Name = project.Value.Title;
-                            Body = project.Value.Body;
-                            Downloads = project.Value.Downloads;
-                            Followers = project.Value.Followers;
-                            IconUrl = project.Value.IconUrl;
-                            Images = project.Value.Gallery;
-                            Description = project.Value.Description;
-                            if (project.Value.Gallery.Any(i => i.Featured))
-                            {
-                                FeaturedImageUrl = project.Value.Gallery.First(i => i.Featured).Url;
-                            }
-                            IsLoading = false;
+                            FeaturedImageUrl = project.Value.Gallery.First(i => i.Featured).Url;
                         }
+                        IsLoading = false;
                     }
-                    break;
-                case PlatformSource.Curseforge:
-                    using (CurseforgeClient client = new(CurseForgeAPI))
+                }
+                break;
+            case PlatformSource.Curseforge:
+                using (CurseforgeClient client = new(CurseForgeAPI))
+                {
+                    CurseforgeProject? project = null;
+                    switch (Type)
                     {
-                        CurseforgeProject? project = null;
-                        switch (Type)
+                        case ProjectTypes.Mod:
+                            project = await client.GetMod(Id);
+                            break;
+                        case ProjectTypes.Modpack:
+                            project = await client.GetModpack(Id);
+                            break;
+                        case ProjectTypes.World:
+                            project = await client.GetWorld(Id);
+                            break;
+                        case ProjectTypes.Resourcepack:
+                            project = await client.GetResourcepack(Id);
+                            break;
+                    }
+                    if (project != null)
+                    {
+                        Name = project.Value.Name;
+                        Downloads = project.Value.DownloadCount;
+                        Description = project.Value.Summary;
+                        Body = await client.GetProjectDescription(Id);
+                        Followers = 0;
+                        IconUrl = project.Value.Logo.Url;
+                        Images = Array.ConvertAll(project.Value.Screenshots, i =>
                         {
-                            case "mod":
-                                project = await client.GetMod(Id);
-                                break;
-                            case "modpack":
-                                project = await client.GetModpack(Id);
-                                break;
-                            case "world":
-                                project = await client.GetWorld(Id);
-                                break;
-                            case "resourcepack":
-                                project = await client.GetResourcepack(Id);
-                                break;
-                        }
-                        if (project != null)
-                        {
-                            Name = project.Value.Name;
-                            Downloads = project.Value.DownloadCount;
-                            Description = project.Value.Summary;
-                            Body = await client.GetProjectDescription(Id);
-                            Followers = 0;
-                            IconUrl = project.Value.Logo.Url;
-                            Images = Array.ConvertAll(project.Value.Screenshots, i =>
-                            {
-                                return new Chase.Minecraft.Modrinth.Model.GalleryItem()
-                                    {
-                                        Title = i.Title,
-                                        Description = i.Description,
-                                        Url = i.Url,
-                                        Created = DateTime.Now.ToString(),
-                                        Featured = false,
-                                        Ordering = 0,
-                                    };
-                            }).ToArray();
+                            return new Chase.Minecraft.Modrinth.Model.GalleryItem()
+                                {
+                                    Title = i.Title,
+                                    Description = i.Description,
+                                    Url = i.Url,
+                                    Created = DateTime.Now.ToString(),
+                                    Featured = false,
+                                    Ordering = 0,
+                                };
+                        }).ToArray();
 
-                            if (Images.Any(i => i.Featured))
-                            {
-                                FeaturedImageUrl = Images.First().Url;
-                            }
-                            IsLoading = false;
+                        if (Images.Any(i => i.Featured))
+                        {
+                            FeaturedImageUrl = Images.First().Url;
                         }
+                        IsLoading = false;
                     }
-                    break;
-            }
+                }
+                break;
         }
     }
 
@@ -227,91 +223,116 @@
         List<ResourceItemVersion> resourceItemVersions = new();
         await Task.Run(async () =>
         {
-            if (Enum.TryParse(typeof(PlatformSource), Source, true, out object tmp))
+            switch (Source)
             {
-                PlatformSource platform = (PlatformSource)tmp;
-                switch (platform)
-                {
-                    case PlatformSource.Modrinth:
-                        using (ModrinthClient client = new())
+                case PlatformSource.Modrinth:
+                    using (ModrinthClient client = new())
+                    {
+                        ModrinthVersionFile[]? versions = await client.GetProjectVersionsAsync(Id, GetPartialVersions(MinecraftVersion));
+                        if (versions != null)
                         {
-                            ModrinthVersionFile[]? versions = await client.GetProjectVersionsAsync(Id, GetPartialVersions(MinecraftVersion));
-                            if (versions != null)
-                            {
-                                Parallel.ForEach(versions, version =>
-                                {
-                                    try
-                                    {
-                                        if (Enum.TryParse(typeof(ReleaseType), version.VersionType, true, out object type))
-                                        {
-                                            resourceItemVersions.Add(new ResourceItemVersion()
-                                                {
-                                                    ID = version.Id,
-                                                    Changelog = version.Changelog,
-                                                    Version = version.Name,
-                                                    Downloads = version.Downloads,
-                                                    GameVersions = version.GameVersions,
-                                                    ReleaseDate = version.DatePublished,
-                                                    ReleaseType = (ReleaseType)type
-                                                });
-                                        }
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Log.Error("Unable to parse version: {VERSION} {MSG}", MinecraftVersion, e.Message, e);
-                                    }
-                                });
-                            }
-                            IsLoading = false;
-                        }
-                        break;
-                    case PlatformSource.Curseforge:
-                        using (CurseforgeClient client = new(CurseForgeAPI))
+                            Parallel.ForEach(versions, version =>
                         {
-                            ModFile[]? versions = await client.GetModFiles(Id);
-                            if (versions != null)
+                            try
                             {
-                                Parallel.ForEach(versions, async version =>
+                                if (Enum.TryParse(typeof(ReleaseType), version.VersionType, true, out object type))
                                 {
-                                    if (string.IsNullOrEmpty(MinecraftVersion) || HasPartialVersion(MinecraftVersion, version.GameVersions))
-                                    {
-                                        try
+                                    resourceItemVersions.Add(new ResourceItemVersion()
                                         {
-                                            ReleaseType ReleaseType = version.ReleaseType switch
-                                            {
-                                                0 => ReleaseType.Unknown,
-                                                1 => ReleaseType.Release,
-                                                2 => ReleaseType.Beta,
-                                                3 => ReleaseType.Alpha,
-                                                _ => ReleaseType.Unknown,
-                                            };
-                                            resourceItemVersions.Add(new ResourceItemVersion()
-                                                {
-                                                    ID = version.Id.ToString(),
-                                                    Changelog = await client.GetProjectVersionDescription(Id, version.Id.ToString()),
-                                                    Version = version.DisplayName,
-                                                    Downloads = version.DownloadCount,
-                                                    GameVersions = version.GameVersions,
-                                                    ReleaseDate = version.FileDate,
-                                                    ReleaseType = ReleaseType,
-                                                });
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            Log.Error("Unable to add curseforge mod version: {MSG}", e.Message, e);
-                                        }
-                                    }
-                                });
+                                            ID = version.Id,
+                                            Changelog = version.Changelog,
+                                            Version = version.Name,
+                                            Downloads = version.Downloads,
+                                            GameVersions = version.GameVersions,
+                                            ReleaseDate = version.DatePublished,
+                                            ReleaseType = (ReleaseType)type,
+                                        });
+                                }
                             }
-                            IsLoading = false;
+                            catch (Exception e)
+                            {
+                                Log.Error("Unable to parse version: {VERSION} {MSG}", MinecraftVersion, e.Message, e);
+                            }
+                        });
                         }
-                        break;
-                }
+                        IsLoading = false;
+                    }
+                    break;
+                case PlatformSource.Curseforge:
+                    using (CurseforgeClient client = new(CurseForgeAPI))
+                    {
+                        ModFile[]? versions = await client.GetModFiles(Id);
+                        if (versions != null)
+                        {
+                            Parallel.ForEach(versions, async version =>
+                        {
+                            if (string.IsNullOrEmpty(MinecraftVersion) || HasPartialVersion(MinecraftVersion, version.GameVersions))
+                            {
+                                try
+                                {
+                                    ReleaseType ReleaseType = version.ReleaseType switch
+                                    {
+                                        0 => ReleaseType.Unknown,
+                                        1 => ReleaseType.Release,
+                                        2 => ReleaseType.Beta,
+                                        3 => ReleaseType.Alpha,
+                                        _ => ReleaseType.Unknown,
+                                    };
+                                    resourceItemVersions.Add(new ResourceItemVersion()
+                                        {
+                                            ID = version.Id.ToString(),
+                                            Changelog = await client.GetProjectVersionDescription(Id, version.Id.ToString()),
+                                            Version = version.DisplayName,
+                                            Downloads = version.DownloadCount,
+                                            GameVersions = version.GameVersions,
+                                            ReleaseDate = version.FileDate,
+                                            ReleaseType = ReleaseType,
+                                        });
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.Error("Unable to add curseforge mod version: {MSG}", e.Message, e);
+                                }
+                            }
+                        });
+                        }
+                        IsLoading = false;
+                    }
+                    break;
             }
         });
         Versions = resourceItemVersions.ToArray();
         IsLoading = false;
         StateHasChanged();
+    }
+
+    private async Task PopulateMod(ResourceItemVersion version)
+    {
+        if (Source == PlatformSource.Modrinth)
+        {
+            using ModrinthClient client = new();
+            ModrinthVersionFile? file = await client.GetProjectVersionAsync(Id, version.ID);
+            if (file != null && file.HasValue)
+            {
+                VersionFileDetails? details = file.Value.Files.FirstOrDefault(i => i.Primary);
+                if (details != null && details.HasValue)
+                {
+                    if (Type == ProjectTypes.Mod)
+                    {
+                        OnModVersionSelected.Invoke(new ModModel()
+                            {
+                                ProjectID = Id,
+                                VersionID = version.ID,
+                                Source = Source,
+                                Name = version.Version,
+                                FileName = details.Value.Filename,
+                                DownloadURL = details.Value.Url,
+                            });
+                    }
+                    return;
+                }
+            }
+        }
     }
 
 }
