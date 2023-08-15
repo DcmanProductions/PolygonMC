@@ -5,10 +5,12 @@
     <p class="title fill">@(Version.Version)</p>
     <p class="game-versions">@(string.Join(", ", Version.GameVersions.Reverse().Take(4)))</p>
     <p class="downloads">@(FormatNumber(Version.Downloads)) Downloads</p>
-    <button class="btn">Download</button>
+    <button class="btn" @onclick=@(()=>OnDownload.Invoke())>Download</button>
 </div>
 
 @code {
     [Parameter]
     public ResourceItemVersion Version { get; set; }
+    [Parameter]
+    public Action OnDownload { get; set; } = () => { };
 }

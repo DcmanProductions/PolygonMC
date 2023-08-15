@@ -51,7 +51,7 @@
             <div class="col fill resource-item-list">
                 @foreach (Mod resource in SearchResults.Results)
                 {
-                    <ResourceItemComponent Id=@resource.ID Website=@resource.Website Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.Icon Background=@resource.Banner IsDownloaded=false Platform=resource.Platform OnClick=@(()=>OnClick.Invoke(resource)) OnModVersionSelected=@(mod=>OnModVersionSelected.Invoke(mod)) />
+                    <ResourceItemComponent Id=@resource.ID Website=@resource.Website Name=@resource.Title Description=@resource.Description Author=@resource.Author Downloads=resource.Downloads Icon=@resource.Icon Background=@resource.Banner Platform=resource.Platform OnClick=@(()=>OnClick.Invoke(resource)) OnModVersionSelected=@(mod=>OnModVersionSelected.Invoke(mod)) InstalledModIds=@InstalledModIds />
                 }
             </div>
         </div>
@@ -72,6 +72,8 @@
     public Action<ResourceItemBase> OnClick { get; set; }
     [Parameter]
     public Action<ModModel> OnModVersionSelected { get; set; } = mod => { };
+    [Parameter]
+    public string[] InstalledModIds { get; set; } = Array.Empty<string>();
 
     public PlatformSource Source { get; set; } = ConfigurationController.Instance.DefaultPlatform;
 
