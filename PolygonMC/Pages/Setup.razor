@@ -36,10 +36,6 @@
                 <input type="number" id="min-ram" @bind=ConfigurationController.Instance.RAM.Minimum>
                 <label for="max-ram">Maximum RAM (MB):</label>
                 <input type="number" id="max-ram" @bind=ConfigurationController.Instance.RAM.Maximum>
-                @if (!ConfigurationController.Instance.HasDownloadedJava)
-                {
-                    <button class="button" @onclick=InstallJava>Install Java</button>
-                }
             </div>
             break;
         case 3:
@@ -74,18 +70,20 @@
     <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>Tab=1"><i class="fa fa-solid fa-folder-tree"></i>Directories</div>
     <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>Tab=2"><i class="fa fa-brands fa-java"></i>Java</div>
     <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>Tab=3"><i class="fa fa-solid fa-rocket"></i>Platforms</div>
-    @if (CanFinalize)
-    {
-        <div class="nav-item @(Tab == 4 ?"selected":"")" @onclick="()=>Tab=4"><i class="fa fa-solid fa-check-circle"></i>Finalize</div>
-    }
+    <div class="nav-item @(Tab == 4 ?"selected":"")" @onclick="()=>{Tab=4;InstallJava();}"><i class="fa fa-solid fa-check-circle"></i>Finalize</div>
 </div>
 @code {
     public int Tab { get; set; } = 0;
     private bool IsInstallingJava { get; set; } = false;
     private bool IsLoading { get; set; } = false;
-    private bool CanFinalize => ConfigurationController.Instance.HasDownloadedJava;
     private string JavaLatestText = "";
     private string JavaLegacyText = "";
+
+    protected override Task OnInitializedAsync()
+    {
+        DiscordRPC.SetPresence("Setting up");
+        return base.OnInitializedAsync();
+    }
 
     private async Task InstallJava()
     {
@@ -111,12 +109,9 @@
 
     private void FinalizeSetup()
     {
-        if (CanFinalize)
-        {
-            IsLoading = true;
-            ConfigurationController.Instance.HasSetup = true;
-            ConfigurationController.Instance.Save();
-            nav.NavigateTo("/welcome");
-        }
+        IsLoading = true;
+        ConfigurationController.Instance.HasSetup = true;
+        ConfigurationController.Instance.Save();
+        nav.NavigateTo("/welcome");
     }
 }
