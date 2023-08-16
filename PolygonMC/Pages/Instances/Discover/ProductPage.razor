@@ -261,7 +261,7 @@
                 case PlatformSource.Curseforge:
                     using (CurseforgeClient client = new(CurseForgeAPI))
                     {
-                        ModFile[]? versions = await client.GetModFiles(Id);
+                        ModFile[]? versions = await client.GetProjectFiles(Id);
                         if (versions != null)
                         {
                             Parallel.ForEach(versions, async version =>
