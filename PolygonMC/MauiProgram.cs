@@ -7,6 +7,7 @@
 */
 
 using Chase.Minecraft.Controller;
+using Microsoft.Extensions.Logging;
 using PolygonMC.Data;
 using Serilog.Formatting.Json;
 using System.IO.Pipes;
@@ -79,6 +80,8 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
+
+        DiscordRPC.InitializeDiscordRPC();
 
         return builder.Build();
     }

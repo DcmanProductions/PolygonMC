@@ -180,9 +180,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         IsLoading = false;
+        DiscordRPC.SetPresence("Creating a new instance");
         await SelectMinecraftVersionCategory(MinecraftVersionCategories.First());
         await base.OnInitializedAsync();
-
     }
 
     private async Task Create()
