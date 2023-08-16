@@ -1,6 +1,9 @@
 ﻿@page "/discover";
 
 @using Chase.Minecraft.Data;
+@using Chase.Minecraft.Model.Resources;
+@using Chase.Minecraft.Modpacks;
+@using PolygonMC.Data;
 @using PolygonMC.Models;
 @using PolygonMC.Shared.Components
 
@@ -53,8 +56,16 @@
         <div id="instances-grid" class="grid">
             @switch (Tab)
             {
+                default:
                 case 0:
+                    foreach (Modpack item in Modpacks.Results)
+                    {
+                        <InstanceComponent Id=@(item.ID) BackgroundImage=@(item.Icon) IsInstalled=false Name=@(item.Title) ModLoader=@(string.Join(',', item.SupportedLoaders)) Source=@(item.Platform) Version=@(item.Versions.First().Version) MinecraftVersion=@(item.GameVersions.First()) />
+                    }
                     break;
+                case 1: break;
+                case 2: break;
+                case 3: break;
             }
         </div>
 
@@ -62,10 +73,10 @@
 
 
         <div class="bottom-nav row alert center horizontal">
-            <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-boxes-packing"></i>Modpacks</div>
-            <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
-            <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
-            <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>{}"><i class="fa fa-solid fa-mortar-pestle"></i>Data Packs</div>
+            <div class="nav-item @(Tab == 0 ?"selected":"")" @onclick="()=>{Tab=0;LoadModPacks();}"><i class="fa fa-solid fa-boxes-packing"></i>Modpacks</div>
+            <div class="nav-item @(Tab == 1 ?"selected":"")" @onclick="()=>{Tab=1;}"><i class="fa fa-solid fa-box"></i>Resource Packs</div>
+            <div class="nav-item @(Tab == 2 ?"selected":"")" @onclick="()=>{Tab=2;}"><i class="fa fa-solid fa-wand-sparkles"></i>Shader Packs</div>
+            <div class="nav-item @(Tab == 3 ?"selected":"")" @onclick="()=>{Tab=3;}"><i class="fa fa-solid fa-mortar-pestle"></i>Data Packs</div>
         </div>
 
     </div>
@@ -80,15 +91,40 @@
     private int Pages { get; set; }
     private int CurrentPage { get; set; } = 0;
     private string Query { get; set; } = "";
-    private PlatformSource Source { get; set; } = PlatformSource.Curseforge;
+    private PlatformSource Source { get; set; } = ConfigurationController.Instance.DefaultPlatform;
     private Timer debouncer;
     private CancellationTokenSource debounceTokenSource;
     private ModpackFiltersModel Filter { get; set; } = new();
+    private SearchResults<Modpack> Modpacks = new() { Results = Array.Empty<Modpack>() };
 
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         Tab = 0;
+        LoadModPacks();
+    }
+
+    private async Task LoadModPacks()
+    {
+        IsLoading = true;
+        await Task.Run(async () =>
+        {
+            SearchBuilder builder = new SearchBuilder(Query)
+           .SetLimit(ItemsPerPage)
+           .SetOffset(CurrentPage * ItemsPerPage);
+
+            if (Source == PlatformSource.ALL || Source == PlatformSource.Curseforge)
+            {
+                builder.AddPlatform(PlatformSource.Curseforge, CurseForgeAPI);
+            }
+            if (Source == PlatformSource.ALL || Source == PlatformSource.Modrinth)
+            {
+                builder.AddPlatform(PlatformSource.Modrinth);
+            }
+            Modpacks = await MultiPlatformInteropClient.SearchModpacksAsync(builder);
+        });
+        IsLoading = false;
+        StateHasChanged();
     }
 }
