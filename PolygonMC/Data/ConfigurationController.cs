@@ -10,6 +10,7 @@ using Chase.Minecraft.Data;
 using Chase.Minecraft.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace PolygonMC.Data;
@@ -28,8 +29,8 @@ internal sealed class ConfigurationController
     [JsonProperty("setup")]
     public bool HasSetup { get; set; } = false;
 
-    [JsonProperty("directory")]
-    public string WorkingDirectory { get; set; } = Directory.GetParent(Assembly.GetExecutingAssembly().Location ?? "").FullName;
+    [JsonProperty("directory"), RequiresAssemblyFiles("Calls System.Reflection.Assembly.Location")]
+    public string WorkingDirectory { get; set; } = Directory.GetParent(Assembly.GetExecutingAssembly().Location ?? "").Parent.CreateSubdirectory("Data").FullName;
 
     [JsonProperty("username")]
     public string Username { get; set; } = "";
